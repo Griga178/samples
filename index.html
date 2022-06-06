@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Main</title>
-    <script src="static/js/input_box.js"></script>
-    <script src="static/js/jquery-3.6.0.min.js"></script>
-  </head>
-  <body>
-      <h1>Hello!</h1>
-      <button type="button" name="button" onclick="create_input()">Создать input (text)</button>
-      <button type="button" name="button">Создать input (checkbox)</button>
-      <button type="button" name="button">Создать input из объекта</button>
-      <button type="button" name="button">Создать кнопку Сохранить/удалить/отменить</button>
-      <div id = "form">
-        <h3>Форма</h3>
-      </div>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <title>Main</title>
+  <script src="static/js/input_box.js"></script>
+  <script src="static/js/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="static/styles/places.css">
+</head>
+
+<body>
+  <h1>Hello!</h1>
+  <button type="button" name="button" onclick="create_input()">Создать input (text)</button>
+  <button type="button" name="button">Создать input (checkbox)</button>
+  <button type="button" name="button">Создать input из объекта</button>
+  <button type="button" name="button">Создать кнопку Сохранить/удалить/отменить</button>
+  <button type="button" name="button" onclick="create_form_block(1)">Создать блок формы</button>
+  <div id="form" class="setting_block">
+    <h3>Форма</h3>
+  </div>
+</body>
+
 </html>
