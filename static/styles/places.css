@@ -1,9 +1,47 @@
-.setting_block{
+.container {
+  position: relative;
   margin: 0 auto;
-  margin: 15px;
-  padding: 5px;
-  height: 300px;
-  width: 500px;
-  border: 1px solid black;
+  width: 90%;
+  height: 900px;
+  background-color: #DCDCDC;
+}
 
+.block {
+  border: 1px solid black;
+  box-sizing: border-box;
+  background-color: #A9A9A9;
+  color: white;
+  position: absolute;
+  padding: 5px;
+}
+
+.top_block {
+
+}
+
+.left_block {
+  height: 600px;
+  width: 18%;
+  top: 1%;
+  left: 1%;
+}
+.right_block {
+  height: 300px;
+  width: 18%;
+  top: 1%;
+  right: 1%;
+}
+
+.central_block {
+  height: 300px;
+  width: 60%;
+  top: 1%;
+  left: 20%;
+}
+
+.bottom_block {
+  height: 100px;
+  width: 98%;
+  left: 1%;
+  bottom : 1%;
 }
