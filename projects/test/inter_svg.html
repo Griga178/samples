@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Картинки с Вращением</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #svg-container {
+            position: relative;
+            width: 80vw;
+            height: 80vh;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #ffffff;
+        }
+        .svg-item {
+            position: absolute;
+            <!-- cursor: pointer; -->
+            user-select: none;
+            transition: transform 0.1s;
+        }
+    </style>
+</head>
+<body>
+
+<div id="svg-container"></div>
+
+<script>
+  // для учета скорости мыши
+  let lastX = 0;
+  let lastY = 0;
+  let lastTime = Date.now();
+  let mouseSpeed = 0
+
+  document.addEventListener('mousemove', (event) => {
+    let currentX = event.clientX;
+    let currentY = event.clientY;
+    let currentTime = Date.now();
+
+    let distance = Math.sqrt((currentX - lastX) ** 2 + (currentY - lastY) ** 2);
+    let timeElapsed = (currentTime - lastTime) / 1000; // переводим в секунды
+
+    if (timeElapsed > 0) {
+        mouseSpeed = distance / timeElapsed; // скорость в пикселях в секунду
+        // console.log(`Скорость мыши: ${mouseSpeed.toFixed(2)} пикселей в секунду`);
+    }
+    lastX = currentX;
+    lastY = currentY;
+    lastTime = currentTime;
+  });
+
+    const svgContainer = document.getElementById('svg-container');
+    const svgs = [
+        '<svg width="50" height="50"><circle cx="25" cy="25" r="20" fill="red"/></svg>',
+        '<svg width="50" height="50"><rect width="50" height="50" fill="green"/></svg>',
+        '<svg width="50" height="50"><ellipse cx="25" cy="25" rx="25" ry="15" fill="blue"/></svg>',
+        '<svg width="50" height="50"><polygon points="25,0 50,50 0,50" fill="yellow"/></svg>',
+        '<svg width="50" height="50"><line x1="0" y1="0" x2="50" y2="50" stroke="purple" stroke-width="5"/></svg>'
+    ];
+
+    function createRandomSvg() {
+        const svgItem = document.createElement('div');
+        svgItem.classList.add('svg-item');
+        // рандомный выбор из списка фигур
+        svgItem.innerHTML = svgs[Math.floor(Math.random() * svgs.length)];
+        // рандомое определение места в контейнере
+        const initialX = Math.random() * (svgContainer.clientWidth - 50);
+        const initialY = Math.random() * (svgContainer.clientHeight - 50);
+        svgItem.style.left = `${initialX}px`;
+        svgItem.style.top = `${initialY}px`;
+
+        let velocityX = 0;
+        let velocityY = 0;
+        let rotateAngel = 0;
+        let rotation = 0
+
+        svgItem.addEventListener('mouseover', (event) => {
+            const rect = svgItem.getBoundingClientRect();
+            const svgX = rect.left + rect.width / 2;
+            const svgY = rect.top + rect.height / 2;
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            const deltaX = svgX - mouseX;
+            const deltaY = svgY - mouseY;
+            const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2); // расстояние
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI); // угол в градусах
+
+            if (distance !== 0) {
+                velocityX = (deltaX / distance) * mouseSpeed / 800;
+                velocityY = (deltaY / distance) * mouseSpeed / 800;
+                rotateAngel = angle / 100
+                console.log(distance)
+            }
+        });
+
+        function update() {
+            const rect = svgItem.getBoundingClientRect();
+            let left = parseFloat(svgItem.style.left) + velocityX;
+            let top = parseFloat(svgItem.style.top) + velocityY;
+
+            let isMoving = false;
+
+            if (left <= 0 || left >= svgContainer.clientWidth - 50) {
+                velocityX *= -1;
+                left = Math.max(0, Math.min(left, svgContainer.clientWidth - 50));
+                isMoving = true;
+            }
+            if (top <= 0 || top >= svgContainer.clientHeight - 50) {
+                velocityY *= -1;
+                top = Math.max(0, Math.min(top, svgContainer.clientHeight - 50));
+                isMoving = true;
+            }
+
+            svgItem.style.left = `${left}px`;
+            svgItem.style.top = `${top}px`;
+
+            // Вращение только при движении
+            if (velocityX > 0.01 || velocityY > 0.01) {
+                rotation += rotateAngel; // Увеличиваем угол вращения при движении
+                svgItem.style.transform = `rotate(${rotation}deg)`;
+            }
+
+            // Замедление инерции перемещения svgItem
+            velocityX *= 0.98;
+            velocityY *= 0.98;
+
+            requestAnimationFrame(update);
+
+        }
+
+
+        svgContainer.appendChild(svgItem); // Добавляем элемент в контейнер
+        update();
+    }
+
+    const numSvgs = Math.floor(Math.random() * 10) + 5;
+    for (let i = 0; i < numSvgs; i++) {
+        createRandomSvg();
+    }
+</script>
+
+</body>
+</html>

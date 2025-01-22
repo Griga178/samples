@@ -1,0 +1,35 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1.5rem;
+}
+
+.logo_block{
+  margin-right: auto;
+}
+
+.nav_logo{
+  width: 140px;
+  height: 72px;
+}
+
+.menu{
+  margin-left: auto;
+  display: flex;
+}
+
+.menu_btn{
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  display: flex;
+  font-size: 1.5rem;
+}
+
+.menu_text {
+  font-size: 1.75rem;
+  font-weight: bold;
+  letter-spacing: 0.15rem;
+}
