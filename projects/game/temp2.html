@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рисование линии</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            width: 500;
+            height: 500;
+        }
+    </style>
+</head>
+<body>
+  <a href="temp.html">temp.html</a><br>
+
+    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <script>
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+        let pointA = null;
+
+        canvas.addEventListener('click', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            if (!pointA) {
+                // Запоминаем координаты точки A
+                pointA = { x: x, y: y };
+                ctx.fillStyle = 'red';
+                ctx.fillRect(pointA.x - 5, pointA.y - 5, 10, 10); // отметим точку A
+            } else {
+                // Рисуем линию между точками A и текущими координатами
+                ctx.beginPath();
+                ctx.moveTo(pointA.x, pointA.y);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                // Сбрасываем точку A для следующего клика
+                pointA = null;
+            }
+        });
+    </script>
+</body>
+</html>

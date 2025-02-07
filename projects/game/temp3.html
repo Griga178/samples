@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body id="body">
+
+    <script type="text/javascript">
+
+      const canvas = document.createElement('canvas');
+      canvas.id = 'gameCanvas';
+      canvas.width = 800
+      canvas.height = 600
+      body.appendChild(canvas)
+      const ctx = canvas.getContext('2d');
+
+      const radius = 80
+      const distance = 100
+      const color = 'rgba(0, 0, 255, 0.1)'
+      const a = {
+        name: "a", index: 0,
+          coord: {x:610, y:250}, color: color,
+          radius: radius, distance: distance }
+
+      const b = {
+        name: "b", index: 0,
+          coord: {x:440, y:250}, color: color,
+          radius: radius, distance: distance }
+
+      const c = {
+        name: "c", index: 0,
+          coord: {x:200, y:320}, color: color,
+          radius: radius, distance: distance }
+
+      const d = {
+        name: "d", index: 0,
+          coord: {x:340, y:320}, color: color,
+          radius: radius, distance: distance }
+
+      function drawCircle(circle){
+        ctx.beginPath();
+        ctx.arc(circle.coord.x, circle.coord.y, circle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = circle.color;
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+        // Рисуем текст внутри круга
+        ctx.fillStyle = "#fff"; // Цвет текста
+        ctx.font = "bold 14px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(circle.name, circle.coord.x, circle.coord.y);
+      };
+      drawCircle(a)
+      drawCircle(b)
+      drawCircle(d)
+      drawCircle(c)
+
+      function getDistance(a, b) {
+        const dx = a.coord.x - b.coord.x;
+        const dy = a.coord.y - b.coord.y;
+        return distanceCircle = Math.sqrt(dx * dx + dy * dy);
+      }
+      console.log("a, b", getDistance(a, b))
+      console.log("d, c", getDistance(d, c))
+      console.log("b, d", getDistance(b, d))
+
+      function getintersectionArea(a, b) {
+        const dist = getDistance(a, b)
+        const rSquared = Math.pow(radius, 2);
+        const part1 = rSquared * Math.acos(dist / (2 * radius));
+        const part2 = (rSquared * dist) / 2 * Math.sqrt(1 - Math.pow(dist / (2 * radius), 2));
+        return Math.floor(intersectionArea =  part2 - part1);
+      }
+
+      console.log("intersection: a, b", getintersectionArea(a, b))
+      console.log("intersection: c, d", getintersectionArea(c, d))
+      console.log("intersection: b, d", getintersectionArea(b, d))
+    </script>
+  </body>
+</html>

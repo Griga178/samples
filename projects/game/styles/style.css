@@ -1,0 +1,76 @@
+body{
+  margin: 0;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #121212; /* Темный фон страницы */
+}
+#gameContainer {
+    display: flex;
+    background-color: #1e1e1e; /* Темный фон контейнера */
+    border-radius: 10px;
+    overflow: hidden;
+}
+#gameCanvas {
+
+}
+#gameMenu {
+    width: 800px;
+    height: 50px;
+    background-color: #333; /* Цвет меню игры */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff; /* Цвет текста в меню */
+}
+#scoreBoard {
+    width: 300px;
+    background-color: #444; /* Цвет таблицы результатов */
+    color: #ffffff; /* Цвет текста в таблице результатов */
+    padding: 10px;
+    border-left: 2px solid #777; /* Разделитель между canvas и таблицей */
+}
+table {
+    width: 100%;
+    table-layout: fixed;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+    text-align: center;
+
+    border: 1px solid black; /* для видимости границ ячеек */
+}
+th {
+    width: 20%;
+}
+
+.svgHeader {
+    width: 25px; /* Ширина SVG */
+    height: 25px; /* Высота SVG */
+    vertical-align: middle;
+}
+.button {
+    margin: 0 10px;
+    background-color: #666;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+#settingsWindow {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    color: #ffffff;
+}
