@@ -8,29 +8,37 @@
     <link rel="stylesheet" href="styles/style.css">
 
 </head>
-<body>
+<body id='body'>
   <div class="container">
         <div id="gameContainer">
           <div>
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            <div class="canvasContainer">
+              <canvas id="gameCanvas" width="800" height="600"></canvas>
+            </div>
             <div id="gameMenu">
-              <button class="button" id="startButton">Начать</button>
-              <button class="button" id="restartButton"style="display: none;">
+              <button class="button btnMenu" id="startButton">Начать</button>
+              <button class="button btnMenu" id="restartButton"style="display: none;">
                 Обновить
               </button>
-              <button class="button" id="settingsButton">Настройки</button>
-              <button class="button" id="exitButton"style="display: none;">
+              <button class="button btnMenu" id="settingsButton">Настройки</button>
+              <button class="button btnMenu" id="exitButton"style="display: none;">
                 Выход
               </button>
             </div>
           </div>
           <div id="settingsWindow">
-              <h3>Настройки</h3>
-              <input type="text" placeholder="Поле 1"><br>
-              <input type="text" placeholder="Поле 2"><br>
-              <input type="text" placeholder="Поле 3"><br>
-              <button class="button" id="saveButton">Сохранить</button>
-              <button class="button" id="closeSettingsButton">Выход</button>
+            <h3>Настройки</h3>
+            <label for="circlesAmount">Количество целей:</label>
+            <input type="number" id="circlesAmount" value="5"><br>
+
+            <label for="radius">Радиус:</label>
+            <input type="number" id="radius" value="25"><br>
+
+            <label for="distance">Дистанция:</label>
+            <input type="number" id="distance" value="150"><br>
+
+            <button class="button" id="saveButton">Сохранить</button>
+            <button class="button" id="closeSettingsButton">Выход</button>
           </div>
 
           <div id="scoreBoard" style="width: 300px;">
@@ -52,45 +60,24 @@
 
               </thead>
               <tbody>
-                <!-- <tr>
-                    <td colspan="5"><strong>Игра 1</strong></td>
-                </tr>
-                  <tr>
-                      <td>1</td>
-                      <td>0.1 sec</td>
-                      <td>1</td>
-                      <td>1</td>
-                      <td>1</td>
-                  </tr>
-                  <tr>
-                      <td colspan="5"><strong>Игра 2</strong></td>
-                  </tr>
-                  <tr>
-                      <td>2</td>
-                      <td>0.2 sec</td>
-                      <td>0.9</td>
-                      <td>0.95</td>
-                      <td>0.5</td>
-                  </tr> -->
               </tbody>
           </table>
-
-
-
-
-
-
-
         </div>
         </div>
-        <script src="js/script.js"></script>
 
-        <script type="text/javascript">
-          let gameCanvas = document.getElementById('gameCanvas')
-          new Game(gameCanvas)
-
-
-        </script>
   </div>
+
+  <script src="js/script.js"></script>
+  <script src="js/devUtils.js"></script>
+
+  <script src="js/colorScheme.js"></script>
+  <script type="text/javascript">
+    let gameCanvas = document.getElementById('gameCanvas')
+    const game = new Game(gameCanvas, colorSchemeCanvas)
+
+    // цветовая схема
+    for (let i = 0; i < colorSchemeTemp.length; i++) {updateStyles(colorSchemeTemp[i])}
+  </script>
+
 </body>
 </html>

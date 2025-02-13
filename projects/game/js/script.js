@@ -1,37 +1,68 @@
+const defaultColors = {
+  interfaceContainerBackground: "#F0F0F0",
+  interfaceGameContainerBackground: "#FFFFFF",
+  interfaceGameMenuBackground: "#F0F0F0",
+  interfaceGameMenuBackground: "#F0F0F0",
+};
 class Game{
-  constructor(canvas){
+  constructor(canvas, clr){
     this.canvas = canvas
+
+    this.circles = [];
+    this.places = [];
+
+    this.motions = []; // перемещение между 2 кругами
+    this.tracking = []; // все motions за игру
+    this.stops = []
+
+    this.init(clr)
+    };
+  init(clr) {
     this.ctx = this.canvas.getContext('2d');
-    this.Menu = new Menu(this)
     // / Фон для всего canvas
-    this.canvasColor = "#252525";
-    this.startCoord = {x: 100, y: 100}
-    this.circlesAmount = 4
+    this.bgWelcome = (clr && clr.back.welcome) || "#252525";
+    this.bgGameStart = (clr && clr.back.gameStart) || "#bfbfbf";
+    this.bgExit = (clr && clr.back.exit) || "#252525";
+    this.bgExitText = (clr && clr.back.exitText) || "#fff";
+
+    this.ctx.fillStyle = this.bgWelcome;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.startCoord = {x: 400, y: 300}
+    this.circlesAmount = 6
     this.radius = 25
     this.distance = 150
-    this.circleColor = "rgba(0, 0, 255, 0.1)"
-    this.circles = []
-    this.places = []
+
+    this.ptClrInit = (clr && clr.crcl.initial) || "rgba(0, 0, 255, 0.1)";
+    this.ptСlrStartPrep = (clr && clr.crcl.hover) || "#FF5733";
+    this.ptСlrStartReady = (clr && clr.crcl.readyToStart) || "#28A745";
+    this.ptСlrinMotion = (clr && clr.crcl.inMotion) || "rgba(0, 0, 0, 0.4)";
+    this.crclСlrFinish = (clr && clr.crcl.finish) || "#0056B3";
+
     this.analyzer = new Analyzer(this)
-    this.moving = [] // перемещение между 2 кругами
-    this.tracking = [] // все moving за игру
-    this.games = []
-    };
+    this.Menu = new Menu(this)
+  };
+  saveSettings(circlesAmount, radius, distance) {
+      this.circlesAmount = circlesAmount;
+      this.radius = radius;
+      this.distance = distance;
+      console.log('Настройки сохранены:', this);
+  }
   generateCircles(amount, radius, distance){
     const circles = [];
     // Добавляем первый элемент с именем "start"
     circles.push({ name: "start", index: 0,
-      coord: this.startCoord, color: this.circleColor,
+      coord: this.startCoord, color: this.ptClrInit,
       radius: radius, distance: null });
     // Добавляем промежуточные элементы "step1", "step2", ..., "step{amount-2}"
     for (let i = 1; i < amount - 1; i++) {
         circles.push({ name: `step ${i}`, index: i,
-          coord: null, color: this.circleColor,
+          coord: null, color: this.ptClrInit,
           radius: radius, distance: distance });
     }
     // Добавляем последний элемент с именем "finish"
     circles.push({name: "finish", index: amount - 1,
-        coord: null, color: this.circleColor,
+        coord: null, color: this.ptClrInit,
         radius: radius, distance: distance });
     return circles;
 
@@ -151,16 +182,21 @@ class Game{
   };
 
   startGame(param){
-    this.ctx.fillStyle = '#f0f0f0'; // цвет фона
+    this.ctx.fillStyle = this.bgGameStart;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    this.canvas.removeEventListener('mousemove', this.handleMouseMoveBound);
-    this.canvas.removeEventListener('mousemove', this.handleMouseLeaveBound);
-    this.canvas.removeEventListener('mousemove', this.handleMouseRunBound);
+    this.canvas.removeEventListener('mousemove', this.detectMouseInCircleBound);
+    this.canvas.removeEventListener('mousemove', this.watchMouseWhileInCircleBound);
+    this.canvas.removeEventListener('mousemove', this.trackMouseUntilTargetBound);
+
+    this.motions = []
+    this.tracking = []
+    this.stops = []
 
     this.circles = []
     this.places = []
     this.circles = this.generateCircles(this.circlesAmount, this.radius, this.distance)
     // старт игры
+    // отрисовка кругов
     this.circles.forEach((circle, index) => {
         // устанавливаем рандомные координаты
         let previousCircle = index > 0 ? this.circles[index - 1] : null;
@@ -183,99 +219,122 @@ class Game{
 
   };
   exitGame(){
-    const canvasWidth = this.canvas.width;
-    const canvasHeight = this.canvas.height;
-    this.ctx.fillStyle = this.canvasColor;
-    this.ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-    this.ctx.fillStyle = "#fff"; // Цвет текста
-    this.ctx.font = "bold 14px Arial";
+    this.ctx.fillStyle = this.bgExit;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle =   this.bgExitText
+    this.ctx.font = "bold 18px Arial";
     this.ctx.textAlign = "center";
     this.ctx.textBaseline = "middle";
-    this.ctx.fillText("Конец игры", canvasWidth/2, canvasHeight/2);
+    this.ctx.fillText("Конец игры", this.canvas.width / 2, this.canvas.height / 2);
   };
 
   setReady(circle){
-    circle.color = 'blue';
+    circle.color = this.ptСlrStartPrep;
     this.drawCircle(circle);
-    this.handleMouseMoveBound = this.handleMouseMove.bind(this, circle);
-    this.canvas.addEventListener('mousemove', this.handleMouseMoveBound);
+    this.detectMouseInCircleBound = this.detectMouseInCircle.bind(this, circle);
+    this.canvas.addEventListener('mousemove', this.detectMouseInCircleBound);
   };
   onStart(circle) {
-    circle.color = 'orange';
+    circle.color = this.ptСlrStartReady;
     this.drawCircle(circle);
-    this.handleMouseLeaveBound = this.handleMouseLeave.bind(this, circle);
-    this.canvas.addEventListener('mousemove', this.handleMouseLeaveBound);
+    this.watchMouseWhileInCircleBound = this.watchMouseWhileInCircle.bind(this, circle);
+    this.canvas.addEventListener('mousemove', this.watchMouseWhileInCircleBound);
   };
-  go(circle) {
-    circle.color = 'green';
-    const currentTime = new Date();
-    circle.timeDeparture = currentTime;
-    this.handleMouseRunBound = this.handleMouseRun.bind(this, circle);
-    this.canvas.addEventListener('mousemove', this.handleMouseRunBound);
-    this.handleMouseTrackBound = this.handleMouseTrack.bind(this);
-    this.canvas.addEventListener('mousemove', this.handleMouseTrackBound);
+  inMotion(circle) {
+    circle.color = this.ptСlrinMotion;
+    circle.timeDeparture = new Date();
+    this.trackMouseUntilTargetBound = this.trackMouseUntilTarget.bind(this, circle);
+    this.canvas.addEventListener('mousemove', this.trackMouseUntilTargetBound);
   };
-  finish(circle) {
-    const currentTime = new Date();
-    circle.timeArrival = currentTime;
+  endMotion(circle) {
+    circle.timeArrival = new Date();
     // УЧЕТ ТОЧКИ ОКОНЧАНИЯ МАРШРУТА -почти
-    this.canvas.removeEventListener('mousemove', this.handleMouseTrackBound);
-    this.tracking.push([...this.moving])
-    this.analyzer.appendRow(this.moving)
-    this.moving = []
+    this.tracking.push([...this.motions])
+    this.analyzer.appendRow(this.motions)
+
+    // рисуем траекторию движения
+    for (let i = 0; i < this.motions.length; i++) {
+      drawPt(this.ctx, this.motions[i], 'brown', 2);
+    }
+    // проверяем на остановки
+    this.checkStop()
+    // рисуем остановки
+    for (let i = 0; i < this.stops.length; i++) {
+      drawPt(this.ctx, this.stops[i], 'yellow', 5);
+    }
+
+    this.motions = []
+    this.stops = []
 
     if (circle.nextCircle) {
         this.setReady(circle);
     } else {
-        this.endGame();
+        this.finish(circle);
     }
   }
-  endGame() {
+  finish(circle) {
+    circle.color = this.crclСlrFinish
+    this.drawCircle(circle);
     this.tracking.map(moving => {
         const totalDistance = this.analyzer.analyzeMovement(moving);
-        console.log(totalDistance);
+        // console.log(totalDistance);
         // сохранить результаты игры TOTAL SCORE
     });
-
   }
-  handleMouseTrack () {
-    console.log('track')
+
+  checkStop() {
+    for (let i = 1; i < this.motions.length; i++) {
+      const mouseCoords = this.motions[i]
+      const lastCoords = this.motions[i - 1];
+      // Проверяем, изменились ли координаты
+      const sameCoords = lastCoords.x === mouseCoords.x && lastCoords.y === mouseCoords.y;
+      const timeDiff = mouseCoords.time - lastCoords.time;
+      const maxTimeDiff = 1 // мс
+
+      if (sameCoords && timeDiff > maxTimeDiff) {
+          this.stops.push(mouseCoords)
+      }
+    }
+  }
+  isStopped(mouseCoords){
+    // console.log("stop", mouseCoords)
+    // drawPt(this.ctx, mouseCoords, 'red', 3) // devUtils.js
+  }
+
+  trackMouseUntilTarget (circle) {
+    // console.log('track')
     const mousePos = this.getMousePos(event);
     const mouseCoords = {
-        time: new Date(),
-        x: mousePos.x,
-        y: mousePos.y
-    };
-    this.moving.push(mouseCoords)
+      step: circle, time: new Date(),
+      x: mousePos.x, y: mousePos.y
+      }
+    // запись всех движений мыши
+    this.motions.push(mouseCoords)
+    if (this.isInsideCircle(mousePos, circle.nextCircle)) {
+      this.drawCircle(circle.nextCircle);
+      this.canvas.removeEventListener('mousemove', this.trackMouseUntilTargetBound);
+      this.endMotion(circle.nextCircle)
+    }
   }
-  // обработка местоположения мыши
-  handleMouseMove (circle) {
+  detectMouseInCircle (circle) {
+    // мышь зашла на круг старта
     const mousePos = this.getMousePos(event);
     if (this.isInsideCircle(mousePos, circle)) {
-        circle.nextCircle.color = 'blue';
+        circle.nextCircle.color = this.ptСlrStartPrep;
         this.drawCircle(circle);
         this.drawCircle(circle.nextCircle);
-        this.canvas.removeEventListener('mousemove', this.handleMouseMoveBound);
+        this.canvas.removeEventListener('mousemove', this.detectMouseInCircleBound);
         this.onStart(circle)
     }
   };
-  handleMouseLeave (circle) {
+  watchMouseWhileInCircle (circle) {
       const mousePos = this.getMousePos(event);
-      if (this.isOutsideCircle(mousePos, circle)) {
-        circle.color = 'green';
+      if (!this.isInsideCircle(mousePos, circle)) {
+        circle.color = this.ptСlrinMotion
         this.drawCircle(circle);
-        this.canvas.removeEventListener('mousemove', this.handleMouseLeaveBound);
-        this.go(circle);
+        this.canvas.removeEventListener('mousemove', this.watchMouseWhileInCircleBound);
+        this.inMotion(circle);
       }
-  };
-  handleMouseRun(circle){
-    const mousePos = this.getMousePos(event);
-    if (this.isInsideCircle(mousePos, circle.nextCircle)) {
-      circle.nextCircle.color = 'green';
-      this.drawCircle(circle.nextCircle);
-      this.finish(circle.nextCircle)
-      this.canvas.removeEventListener('mousemove', this.handleMouseRunBound);
-    }
   };
   getMousePos (event) {
     const rect = this.canvas.getBoundingClientRect();
@@ -284,12 +343,6 @@ class Game{
         y: event.clientY - rect.top
     };
   };
-  isOutsideCircle(mousePos, circle) {
-    // Вычисляем расстояние от мыши до центра круга
-    const distance = Math.sqrt(Math.pow(mousePos.x - circle.coord.x, 2) + Math.pow(mousePos.y - circle.coord.y, 2));
-    // Проверяем, покинула ли мышь область круга
-    return (distance > circle.radius)
-  }
   isInsideCircle(mousePos, circle) {
       const dx = mousePos.x - circle.coord.x;
       const dy = mousePos.y - circle.coord.y;
@@ -305,6 +358,7 @@ class Menu {
   init() {
     this.startButton = document.getElementById('startButton');
     this.settingsButton = document.getElementById('settingsButton');
+    this.saveButton = document.getElementById('saveButton');
     this.settingsWindow = document.getElementById('settingsWindow');
     this.saveButton = document.getElementById('saveButton');
     this.closeSettingsButton = document.getElementById('closeSettingsButton');
@@ -316,25 +370,42 @@ class Menu {
       this.game.startGame();
       this.initGameButtons()
     };
-
     this.settingsButton.onclick = () => {
       settingsWindow.style.display = 'block';
     };
+    this.saveButton.addEventListener('click', () => {
+      const circlesAmount = parseInt(document.getElementById('circlesAmount').value) || 3;
+      const radius = parseFloat(document.getElementById('radius').value) || 25;
+      const distance = parseFloat(document.getElementById('distance').value) || 50;
+      game.saveSettings(circlesAmount, radius, distance);
+      this.closeSettingsButton.onclick()
+    });
+    this.closeSettingsButton.onclick = () => {
+      settingsWindow.style.display = 'none';
+    };
+    this.populateSettings()
   };
+  // Функция для установки значений в поля ввода
+  populateSettings() {
+      document.getElementById('circlesAmount').value = this.game.circlesAmount;
+      document.getElementById('radius').value = this.game.radius;
+      document.getElementById('distance').value = this.game.distance;
+  }
+
 
   initGameButtons() {
     this.startButton.style.display = 'none';
-    // this.settingsButton.style.display = 'none';
     this.settingsWindow.style.display = 'none';
     this.restartButton.style.display = 'block';
     this.exitButton.style.display = 'block';
-
-    this.restartButton.onclick = this.game.startGame('restart'); // Связываем кнопку с функцией начала игры
+    this.restartButton.onclick = () => {
+      this.game.startGame('restart')
+    };
 
     this.exitButton.onclick = () => {
       this.game.exitGame()
       this.initMenuButtons()
-    }
+    };
 
     // document.getElementById('gameMenu').appendChild(this.restartButton);
     // document.getElementById('gameMenu').appendChild(this.exitButton);

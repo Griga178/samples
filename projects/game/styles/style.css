@@ -1,76 +1,121 @@
+
 body{
   margin: 0;
 }
+
 .container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
-    background-color: #121212; /* Темный фон страницы */
+    background-color: rgb(19 68 84);;
+}
+.canvasContainer{
+  /* способ убрать 4 px у canvas */
+  background-color: #ccc;
+  width: 800px;
+  height: 600px;
 }
 #gameContainer {
     display: flex;
-    background-color: #1e1e1e; /* Темный фон контейнера */
     border-radius: 10px;
     overflow: hidden;
-}
-#gameCanvas {
-
 }
 #gameMenu {
     width: 800px;
     height: 50px;
-    background-color: #333; /* Цвет меню игры */
+    border-top-style: solid;
+    border-top-width: 2px;
+    border-top-color:  rgba(0, 0, 0, 0.3);;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff; /* Цвет текста в меню */
+    background-color: #ccc;
 }
 #scoreBoard {
     width: 300px;
-    background-color: #444; /* Цвет таблицы результатов */
-    color: #ffffff; /* Цвет текста в таблице результатов */
     padding: 10px;
-    border-left: 2px solid #777; /* Разделитель между canvas и таблицей */
+    overflow-y: auto;
+    max-height: 634px;
+    border-left-color: rgba(0, 0, 0, 0.3);
+    border-left-width: 2px;
+    border-left-style: solid;
+    background-color: #ccc;
 }
 table {
     width: 100%;
     table-layout: fixed;
     border: 1px solid black;
-    border-collapse: collapse;
+    border-collapse: collapse; /* Убираем промежутки между ячейками */
 }
 th, td {
     text-align: center;
-
     border: 1px solid black; /* для видимости границ ячеек */
 }
 th {
     width: 20%;
+    position: sticky; /* Делаем заголовок фиксированным */
+    top: 0; /* Прикрепляем к верхней части контейнера */
+    z-index: 1; /* Увеличиваем z-index, чтобы заголовок был поверх других элементов */
 }
-
 .svgHeader {
     width: 25px; /* Ширина SVG */
     height: 25px; /* Высота SVG */
     vertical-align: middle;
 }
-.button {
-    margin: 0 10px;
-    background-color: #666;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-}
+
 #settingsWindow {
     display: none;
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #333;
+    width: 300px;  /* Задаем ширину окна настроек */
+    padding: 20px; /* Отступы для внутреннего содержимого */
+    transform: translate(-100%, -50%);
     padding: 20px;
+    background-color: rgb(19 68 84);
+    color: #ccc;
     border-radius: 10px;
-    color: #ffffff;
+    box-shadow: 10px -14px 9px 0px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif; /* Шрифт */
+}
+#settingsWindow h3 {
+    margin-bottom: 20px; /* Отступ снизу заголовка */
+    text-align: center; /* Выравнивание заголовка по центру */
+}
+#settingsWindow label {
+    display: block; /* Каждая метка на новой строке */
+    margin: 10px 0 5px; /* Отступы вокруг метки */
+}
+#settingsWindow input[type="number"] {
+    width: calc(100%); /* Ширина инпутов */
+    padding: 5px; /* Отступ внутри инпута */
+    border: 1px solid #ccc; /* Рамка */
+    border-radius: 5px; /* Закругленные углы */
+    box-sizing: border-box; /* Для корректного расчета ширины */
+}
+button {
+  cursor: pointer;
+  border-radius: 5px; /* Закругленные углы */
+  background-color: rgb(140, 220, 150);;
+}
+button:hover {
+  /* Сделать цвет ярче */
+  filter: brightness(1.7);
+  /* Увеличить насыщенность */
+  filter: saturate(2);
+}
+#settingsWindow .button {
+    width: 100%; /* Кнопки занимают всю ширину */
+    padding: 10px; /* Отступы внутри кнопки */
+    margin: 10px 0; /* Отступы между кнопками */
+    border: none; /* Без рамки */
+}
+
+.btnMenu {
+    margin: 0 10px;
+    padding: 10px 20px;
+    border-style: solid;
+    border-width: 0px;
+    border-color:  black;
 }
