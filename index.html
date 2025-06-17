@@ -4,42 +4,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мое Портфолио</title>
+    <title>Портфолио</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+  <div class="page-wrapper">
+
+    <div id="container">
+      <button id="mainBtn" aria-haspopup="true" aria-expanded="false" aria-label="Открыть меню">Проекты<br>->main</button>
+      <div id="list" role="menu" aria-hidden="true">
+        <a href="projects/first/index2.html" role="menuitem" title="Ссылка 1">Vincent</a>
+        <a href="projects/game/index2.html" role="menuitem" title="Ссылка 2">Game</a>
+        <a href="projects/lazor/index.html" role="menuitem" title="Ссылка 3">lazor</a>
+        <a href="projects/shark/index.html" role="menuitem" title="Ссылка 4">shark</a>
+        <a href="projects/test/inter_svg.html" role="menuitem" title="Ссылка 4">test</a>
+        <a href="projects/test/js_scroll.html" role="menuitem" title="Ссылка 4">test2</a>
+        <a href="projects/amsa/index.html" role="menuitem" title="Ссылка 4">amsa</a>
+      </div>
+    </div>
+
+
+
     <header>
-        <h1>Добро пожаловать в мое портфолио</h1>
-        <nav>
-            <ul>
-                <li><a href="#about">Обо мне</a></li>
-                <li><a href="#projects">Проекты</a></li>
-                <li><a href="#contact">Контакты</a></li>
-            </ul>
-        </nav>
+      <h1>Добро пожаловать в мое портфолио</h1>
+      <nav>
+        <ul>
+          <li><a href="#about">Обо мне</a></li>
+          <li><a href="#projects">Проекты</a></li>
+          <li><a href="#contact">Контакты</a></li>
+        </ul>
+      </nav>
     </header>
 
     <section id="about">
-        <h2>Обо мне</h2>
-        <p>Меня зовут Григорий, и я веб-разработчик с опытом в верстке сайтов. Я специализируюсь на создании адаптивных и удобных для пользователей интерфейсов.</p>
+      <h2>Обо мне</h2>
+      <p>Меня зовут Григорий, и я веб-разработчик с опытом в верстке сайтов. Я специализируюсь на создании адаптивных и удобных для пользователей интерфейсов.</p>
     </section>
 
-    <section id="projects">
-        <h2>Мои проекты</h2>
-        <ul>
-            <li><a href="projects/project1/index.html">Проект 1</a> - Краткое описание проекта 1.</li>
-            <li><a href="projects/shark/index.html">Проект 2</a> - Краткое описание проекта 2.</li>
-            <li><a href="projects/project3/index.html">Проект 3</a> - Краткое описание проекта 3.</li>
-        </ul>
-    </section>
+    <!-- <section id="projects">
+      <h2>Мои проекты</h2>
+      <ul>
+        <li><a href="projects/project1/index.html">Проект 1</a> - Краткое описание проекта 1.</li>
+        <li><a href="projects/shark/index.html">Проект 2</a> - Краткое описание проекта 2.</li>
+        <li><a href="projects/project3/index.html">Проект 3</a> - Краткое описание проекта 3.</li>
+      </ul>
+    </section> -->
 
     <section id="contact">
-        <h2>Контакты</h2>
-        <p>Если у вас есть вопросы, вы можете связаться со мной по электронной почте: <a href="mailto:your-email@example.com">grisha.tis@gmail.com</a>.</p>
+      <h2>Контакты</h2>
+      <p>Если у вас есть вопросы, вы можете связаться со мной по электронной почте: <a href="mailto:your-email@example.com">grisha.tis@gmail.com</a>.</p>
     </section>
 
     <footer>
-        <p>&copy; 2025 [Тищенко Григорий]. Все права защищены.</p>
+      <p>&copy; 2025 [Тищенко Григорий]. Все права защищены.</p>
     </footer>
+
+  </div>
+  <script>
+    const container = document.getElementById('container');
+    const mainBtn = document.getElementById('mainBtn');
+    const list = document.getElementById('list');
+    const items = Array.from(list.querySelectorAll('a'));
+    const radius = 90; // Радиус, на котором будут расположены маленькие кружки
+
+    function positionItems() {
+      const count = items.length;
+      const angleStep = 360 / count;
+
+      items.forEach((item, i) => {
+      const angle = (angleStep * i - 90) * (Math.PI / 180); // -90 для начального положения сверху
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+
+      item.style.transitionDelay = `${i * 0.1}s`; // последовательная задержка появления
+      item.style.transformOrigin = 'center center';
+      if (container.classList.contains('open')) {
+        item.style.transform = `translate(${x}px, ${y}px) scale(1)`;
+        item.style.opacity = '1';
+      } else {
+        item.style.transform = 'translate(0, 0) scale(0.5)';
+        item.style.opacity = '0';
+        item.style.transitionDelay = '0s';
+      }
+      });
+    }
+
+    mainBtn.addEventListener('click', () => {
+      const isOpen = container.classList.toggle('open');
+      if (isOpen) {
+        list.classList.add('open');
+      } else {
+        list.classList.remove('open');
+      }
+      mainBtn.setAttribute('aria-expanded', isOpen);
+      list.setAttribute('aria-hidden', !isOpen);
+      positionItems();
+    });
+
+    document.addEventListener('click', e => {
+      if (!container.contains(e.target)) {
+        container.classList.remove('open');
+        list.classList.remove('open');
+        mainBtn.setAttribute('aria-expanded', false);
+        list.setAttribute('aria-hidden', true);
+        positionItems();
+      }
+    });
+
+    // Инициализация позиций (по умолчанию закрыто)
+    positionItems();
+  </script>
 </body>
 </html>
