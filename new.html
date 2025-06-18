@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>8x8 Сетка с подсветкой</title>
+<style>
+  body, html {
+    margin:0; padding:0; height:100vh; overflow: hidden;
+    background: #f0f0f0;
+    font-family: monospace;
+    user-select: none;
+  }
+  #container {
+    position: relative;
+    width: 640px;  /* 8 * 80 */
+    height: 640px;
+    margin: 40px 0 0 40px;
+  }
+  .cell {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    top: 0;
+    left: 0;
+    background: rgba(0, 150, 255, 0);
+    transition: background 0.1s linear;
+  }
+  #rows, #cols {
+    position: absolute;
+    color: rgba(255,255,255,0.1);
+    font-size: 14px;
+    user-select: none;
+    pointer-events: none;
+  }
+  #rows {
+    top: 40px;
+    left: 0;
+    width: 40px;
+    height: 640px;
+    line-height: 80px;
+    text-align: right;
+  }
+  #cols {
+    top: 0;
+    left: 40px;
+    width: 640px;
+    height: 40px;
+    display: flex;
+  }
+  #cols span {
+    flex: 1;
+    opacity: 0.1;
+    text-align: center;
+    line-height: 40px;
+  }
+  /* Подсветка активной строки и столбца */
+  #rows span.highlight, #cols span.highlight {
+    color: #0af;
+    opacity: 1;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div id="rows"></div>
+<div id="cols"></div>
+<div id="container"></div>
+
+<script>
+  const container = document.getElementById('container');
+  const rowsDiv = document.getElementById('rows');
+  const colsDiv = document.getElementById('cols');
+  const SIZE = 8;
+  const CELL_SIZE = 80;
+
+  // Создаем координаты слева (строки)
+  for(let i=1; i <= SIZE; i++) {
+    const span = document.createElement('span');
+    span.textContent = i;
+    rowsDiv.appendChild(span);
+  }
+  // Создаем координаты сверху (столбцы)
+  for(let i=1; i <= SIZE; i++) {
+    const span = document.createElement('span');
+    span.textContent = i;
+    colsDiv.appendChild(span);
+  }
+
+  // Создаем клетки
+  const cells = [];
+  for(let row=0; row<SIZE; row++) {
+    for(let col=0; col<SIZE; col++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.style.top = (row * CELL_SIZE) + 'px';
+      cell.style.left = (col * CELL_SIZE) + 'px';
+      container.appendChild(cell);
+      cells.push({el: cell, row, col});
+    }
+  }
+
+  // Функция вычисляет расстояние между центром квадрата и мышью
+  function distance(cx, cy, mx, my) {
+    return Math.sqrt((cx - mx)**2 + (cy - my)**2);
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll('#rows span.highlight').forEach(el => el.classList.remove('highlight'));
+    document.querySelectorAll('#cols span.highlight').forEach(el => el.classList.remove('highlight'));
+  }
+
+  container.addEventListener('mousemove', e => {
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    let closestCell = null;
+    let minDist = Infinity;
+
+    cells.forEach(({el, row, col}) => {
+      const cx = col * CELL_SIZE + CELL_SIZE/2;
+      const cy = row * CELL_SIZE + CELL_SIZE/2;
+      const dist = distance(cx, cy, mouseX, mouseY);
+
+      // Чем ближе, тем больше opacity (макс 1, растёт от 0 до 120px расстояния)
+      const maxDist = 120;
+      let opacity = Math.max(0, (maxDist - dist) / maxDist);
+      opacity = Math.min(1, opacity);
+
+      el.style.background = `rgba(0,150,255,${opacity})`;
+
+      if(dist < minDist) {
+        minDist = dist;
+        closestCell = {row, col};
+      }
+    });
+
+    // Подсветить координаты выбранной клетки
+    clearHighlights();
+    if(closestCell) {
+      rowsDiv.children[closestCell.row].classList.add('highlight');
+      colsDiv.children[closestCell.col].classList.add('highlight');
+    }
+  });
+
+  container.addEventListener('mouseleave', () => {
+    // При уходе мыши — скрываем подсветку клеток и координат
+    cells.forEach(({el}) => {
+      el.style.background = 'rgba(0,150,255,0)';
+    });
+    clearHighlights();
+  });
+
+</script>
+
+</body>
+</html>
