@@ -1,0 +1,103 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+struct Point {
+    int x, y;
+    Point(int _x, int _y) : x(_x), y(_y) {}
+};
+
+pair<Point, Point> findCoords(const vector<string>& grid) {
+    Point A(-1, -1), B(-1, -1);
+    int y = 1;
+    for (const auto& row : grid) {
+        size_t posA = row.find('A');
+        if (posA != string::npos) A = Point(posA + 1, y);
+        size_t posB = row.find('B');
+        if (posB != string::npos) B = Point(posB + 1, y);
+        ++y;
+    }
+    return {A, B};
+}
+
+vector<Point> buildWayV2(Point start, Point finish, int stepDir) {
+    vector<Point> steps;
+    int x = start.x, y = start.y;
+    steps.emplace_back(x, y);
+
+    // Если x чётное, делаем шаг горизонтальный
+    if (x % 2 == 0) {
+        x += stepDir;
+        steps.emplace_back(x, y);
+    }
+
+    // Двигаемся по вертикали
+    while (y != finish.y) {
+        y += stepDir;
+        steps.emplace_back(x, y);
+    }
+
+    // Двигаемся по горизонтали
+    while (x != finish.x) {
+        x += stepDir;
+        steps.emplace_back(x, y);
+    }
+
+    return steps;
+}
+
+void drawRows(int n, int m, const vector<Point>& stepsA, const vector<Point>& stepsB) {
+    // Инициализируем поле
+    vector<string> map(n, string(m, '.'));
+    for (int y = 0; y < n; ++y) {
+        for (int x = 0; x < m; ++x) {
+            if (((x+1) % 2 == 0) && ((y+1) % 2 == 0))
+                map[y][x] = '#';
+        }
+    }
+
+    // Помещаем символы A/a и B/b
+    map[stepsA[0].y - 1][stepsA[0].x - 1] = 'A';
+    for (size_t i = 1; i < stepsA.size(); ++i)
+        map[stepsA[i].y - 1][stepsA[i].x - 1] = 'a';
+
+    map[stepsB[0].y - 1][stepsB[0].x - 1] = 'B';
+    for (size_t i = 1; i < stepsB.size(); ++i)
+        map[stepsB[i].y - 1][stepsB[i].x - 1] = 'b';
+
+    for (const auto& row : map) {
+        cout << row << "\n";
+    }
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int testCount;
+    cin >> testCount;
+    while (testCount--) {
+        int n, m;
+        cin >> n >> m;
+        vector<string> grid(n);
+        for (int i = 0; i < n; ++i) {
+            cin >> grid[i];
+        }
+
+        auto [A, B] = findCoords(grid);
+
+        vector<Point> stepsA, stepsB;
+        if (A.x + A.y <= B.x + B.y) {
+            stepsA = buildWayV2(A, Point(1,1), -1);
+            stepsB = buildWayV2(B, Point(m, n), 1);
+        } else {
+            stepsA = buildWayV2(A, Point(m, n), 1);
+            stepsB = buildWayV2(B, Point(1, 1), -1);
+        }
+
+        drawRows(n, m, stepsA, stepsB);
+    }
+
+    return 0;
+}
