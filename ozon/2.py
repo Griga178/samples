@@ -1,70 +1,151 @@
+'''
+    3. Много шестиугольников - OK
+'''
+
 import sys
 input = sys.stdin.readline
 
-# m, n, width, height, k = map(int, input().split())
-# m, n, width, height, k = (20, 5, 1, 1, 10)
-m, n, width, height, k = (30, 10, 4, 2, 6)
-# m ширина поля/ n - высота
-figureRows = []
+def drow_hex_v2(w, h) -> list:
+    # шапка
+    curFig = []
+    header = [" " for __ in range(h)]
+    for __ in range(w):
+        header.append("_")
+    curFig.append(header)
 
-top_bottom = '+' + '-' * m + '+'
-empty_line = '|' + ' ' * m + '|'
+    # body верх
+    curMargin = h-1
+    curDopWidth = 0
+    for __ in range(h):
+        row_body_top = [" "] * curMargin
+        row_body_top += "/"
+        row_body_top += " " * curDopWidth
+        row_body_top += " " * w
+        row_body_top += "\\"
+        curMargin -= 1
+        curDopWidth += 2
+        curFig.append(row_body_top)
+    # body низ
+    row_body_bot = []
+    for __ in range(h-1):
+        curDopWidth -= 2
+        curMargin += 1
+        row_body_bot = [" "] * curMargin
+        row_body_bot += "\\"
+        row_body_bot += " " * curDopWidth
+        row_body_bot += " " * w
+        row_body_bot += "/"
+        curFig.append(row_body_bot)
+    # низ
+    botom = [" "] * (curMargin+1)
+    botom += "\\"
+    botom += ["_"] * (w)
+    botom += "/"
+    curFig.append(botom)
+    return curFig
 
-hex_in_row_different = bool((m // (width + height) - 1) % 2)
-hex_in_row_amount = (m // (width + height) - 1) // 2
+def input_hex(map:list, w, h, x: int, y: int):
+    hex_data = drow_hex_v2(w, h)
 
-isOdd = True if hex_in_row_different else False
-rows = ['|' for __ in range(n)]
-rowIdx = 0
-while k > 0:
-    if isOdd:
-        hex_in_row = hex_in_row_amount + 1
-        isOdd = False
+    xIds = x
+    yIds = y
+    for row in hex_data:
+        xIds = x
+        for cell in row:
+            if map[yIds][xIds] == " ":
+                map[yIds][xIds] = cell
+
+            xIds += 1
+        yIds += 1
+
+def draw_map(m, n, width, height, k):
+
+    fig_rows = [[' ' for i in range(m)] for j in range(n)]
+    for r in fig_rows:
+        r += "|"
+    hex_width = height+width+height
+    # hex_height = 1 + height + height
+    # кол-во в нечетном ряду (m-width)//(height+width+height+width)
+    hex_in_odd_row = (m+width)//(hex_width+width)
+    # отступ слева в четном ряду
+    evenMargineX = width + height
+    # кол-во в четном ряду (m-width-evenMargine)//(height+width+height+width)
+    hex_in_even_row = (m+width-evenMargineX)//(hex_width+width)
+    # ищем количество рядов и количество hex в последнем ряду
+    current_k = k
+    ostatok_k = 0
+    isOdd = True
+    row_amount = 0
+
+    # print('w:', hex_width, 'h:', hex_height, 'map_w:', m, 'k:', k)
+    # print('h in odd:', hex_in_odd_row, 'h in even:',hex_in_even_row)
+
+    while current_k != 0:
+        row_amount += 1
+        if isOdd:
+            if current_k > hex_in_odd_row:
+                current_k -= hex_in_odd_row
+                isOdd = False
+            else:
+                ostatok_k = current_k
+                current_k = 0
+
+        else:
+            if current_k > hex_in_even_row:
+                current_k -= hex_in_even_row
+                isOdd = True
+            else:
+                ostatok_k = current_k
+                current_k = 0
+    # print('ряды', row_amount, "в последнем", ostatok_k, "hex")
+
+    stepX = width * 2 + height * 2
+    stepY = height
+
+    yIdx = 0
+    isOdd = True
+    for y in range(row_amount-1):
+        xIdx = 0
+        if isOdd:
+            for x in range(hex_in_odd_row):
+                # fig_rows[yIdx][xIdx] = 0
+                input_hex(fig_rows, width, height, xIdx, yIdx)
+                xIdx += stepX
+            isOdd = False
+        else:
+            xIdx += evenMargineX
+            for x in range(hex_in_even_row):
+                # fig_rows[yIdx][xIdx] = 0
+                input_hex(fig_rows, width, height, xIdx, yIdx)
+                xIdx += stepX
+            isOdd = True
+        yIdx += stepY
     else:
-        hex_in_row = hex_in_row_amount
-        isOdd = True if hex_in_row_different else False
-
-    k -= hex_in_row
-
-    if k < 0:
-        hex_in_row = hex_in_row + k
-
-    for hex in range(hex_in_row):
-
-        hexHead = f'{" "*height}{"_"*width}{" "*height}{" "*width}'
-        rows[rowIdx] += hexHead
-
-
-        curMargin = height-1
-        curDopWidth = 0
-
-        # for __ in range(height):
-            # rowIdx += 1
-
-        # for __ in range(height):
-        #     rowIdx += 1
-
-        # for __ in range(height):
-        #     row = f'{" "*curMargin}/{" "*curDopWidth}{" "*width}\\'
-        #     hexRows[rowIdx] += row
-        #     curFig.append(row)
-        #     curMargin -= 1
-        #     curDopWidth += 2
-
-        # for __ in range(height):
-        #     curDopWidth -= 2
-        #     curMargin += 1
-        #     row = f'{" "*curMargin}\{" "*curDopWidth}{" "*width}/'
-        #     curFig.append(row)
-    rowIdx += (1+1)  # head + height *2
-
-    # row += '|'
-    # rows.append(hexRows)
+        xIdx = 0
+        if isOdd:
+            for x in range(ostatok_k):
+                # fig_rows[yIdx][xIdx] = 0
+                input_hex(fig_rows, width, height, xIdx, yIdx)
+                xIdx += stepX
+            isOdd = False
+        else:
+            xIdx += evenMargineX
+            for x in range(ostatok_k):
+                # fig_rows[yIdx][xIdx] = 0
+                input_hex(fig_rows, width, height, xIdx, yIdx)
+                xIdx += stepX
+            isOdd = True
+        yIdx += stepY
+    return fig_rows
 
 
+m, n, width, height, k = map(int, input().split())
+fig_rows = draw_map(m, n, width, height, k)
+top_bottom = '+' + '-' * m + '+'
+sys.stdout.write(top_bottom + '\n')
 
-print(top_bottom)
-for r in rows:
-    print(r)
+for row in fig_rows:
+    sys.stdout.write('|')
+    sys.stdout.write(''.join(row) + '\n')
 
-print(top_bottom)
+sys.stdout.write(top_bottom + '\n')
