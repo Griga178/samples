@@ -108,14 +108,12 @@ def draw_map(m, n, width, height, k):
         xIdx = 0
         if isOdd:
             for x in range(hex_in_odd_row):
-                # fig_rows[yIdx][xIdx] = 0
                 input_hex(fig_rows, width, height, xIdx, yIdx)
                 xIdx += stepX
             isOdd = False
         else:
             xIdx += evenMargineX
             for x in range(hex_in_even_row):
-                # fig_rows[yIdx][xIdx] = 0
                 input_hex(fig_rows, width, height, xIdx, yIdx)
                 xIdx += stepX
             isOdd = True
@@ -124,7 +122,6 @@ def draw_map(m, n, width, height, k):
         xIdx = 0
         if isOdd:
             for x in range(ostatok_k):
-                # fig_rows[yIdx][xIdx] = 0
                 input_hex(fig_rows, width, height, xIdx, yIdx)
                 xIdx += stepX
             isOdd = False
