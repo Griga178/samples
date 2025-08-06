@@ -279,14 +279,14 @@ for __ in range(case_amount):
     # print(current_map)
     width, height, isOdd= get_hex_param(current_map, n, m)
     water_map = draw_map_v2(m, n, width, height, current_map, isOdd)
-    print(' INPUT ')
+    print(' INPUT ') # убрать
     for map_row in current_map:
         # print(map_row)
         print(''.join(map_row))
-    print(' OUTPUT ')
+    print(' OUTPUT ') # убрать
     for map_row in water_map:
 
-        print(''.join(map_row))
+        print(''.join(map_row)) # 4 заменить на stdout
 
-    print('w:', width, 'h:', height)
-    print('\n\n')
+    print('w:', width, 'h:', height) # убрать
+    print('\n\n') # убрать
