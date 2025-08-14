@@ -1,12 +1,308 @@
+# есть экранирование!
+
+inp_str = '''7
+3 3
+ _
+/ \\
+\\_/
+4 9
+ _   _
+/ \\_/ \\_
+\\_/ \\_/ \\
+  \\_/ \\_/
+12 11
+     _   _
+   _/ \\_/ \\
+  / \\_/ \\_/
+  \\_/ \\_/
+ _/ \\_/ \\_
+/ \\_/ \\_/ \\
+\\_/ \\_/ \\_/
+/ \\ / \\
+\\_/ \\_/  _
+/ \\_/ \\ / \\
+\\_/ \\_/ \\_/
+  \\_/
+5 5
+   _
+ _/ \\
+/ \\_/
+\\_/ \\
+  \\_/
+5 5
+  _
+ / \\
+/   \\
+\\   /
+ \\_/
+6 7
+ __
+/  \\__
+\\__/  \\
+/  \\__/
+\\__/  \\
+   \\__/
+12 16
+ ____      ____
+/    \\____/    \\
+\\____/    \\____/
+     \\____/
+ ____      ____
+/    \\    /    \\
+\\____/    \\____/
+
+ ____
+/    \\____
+\\____/    \\
+     \\____/     '''
+
+inp_str2 = '''20
+9 17
+ _   _   _   _
+/ \_/ \_/ \_/ \_
+\_/ \_/ \_/ \_/ \
+/ \_/ \_/ \_/ \_/
+\_/ \_  \_/ \_/ \
+/ \_/ \ / \_/ \_/
+\_/ \_/ \_/ \_/ \
+/ \_/ \ / \_/ \_/
+\_/ \_/ \_/ \_/
+12 5
+ _
+/ \
+\_/
+
+
+
+
+
+
+   _
+  / \
+  \_/
+4 13
+           _
+ _   _   _/ \
+/ \ / \ / \_/
+\_/ \_/ \_/
+17 17
+ _   _   _   _
+/ \ / \_/ \_/ \_
+\_/ \_/ \_/ \_/ \
+/ \_/ \_/ \_/ \_/
+\_/ \_/ \_/ \_/ \
+/ \_/ \_/ \_/ \_/
+\_/ \   \_/ \_/ \
+/ \_/  _  \_/ \_/
+\_/ \_/ \_/ \_/ \
+/ \_/ \_/ \_/ \_/
+\_/ \_/ \_/ \_/ \
+/ \_/ \_  \_/ \_/
+\_/ \_/ \_/ \_/ \
+  \_/ \_/ \_/ \_/
+ _/ \_/ \_/ \_/ \
+/ \_/ \_/ \_/ \_/
+\_/ \_/     \_/
+4 5
+ _
+/ \_
+\_/ \
+  \_/
+10 19
+         _   _
+   _    / \_/ \_
+ _/ \_  \_/ \_/ \_
+/ \_/ \ / \_/ \_/ \
+\_/ \_/ \_/ \_/ \_/
+  \_/  _   _/ \_/
+ _/ \_/ \_/ \_/ \_
+/ \_/ \_/ \_/ \_/ \
+\_/ \_/ \_/ \_/ \_/
+  \_/
+5 19
+         _       _
+   _   _/ \_   _/ \
+ _/ \_/ \_/ \_/ \_/
+/ \_/ \_/ \_/ \_/ \
+\_/ \_/ \_/ \_/ \_/
+17 13
+ _
+/ \
+\_/
+           _
+          / \
+       _  \_/
+      / \
+      \_/
+
+
+
+
+
+
+ _
+/ \
+\_/
+3 3
+ _
+/ \
+\_/
+13 3
+ _
+/ \
+\_/
+/ \
+\_/
+
+ _
+/ \
+\_/
+/ \
+\_/
+/ \
+\_/
+14 11
+     _
+    / \_
+ _  \_/ \_
+/ \   \_/ \
+\_/   / \_/
+/ \   \_/
+\_/  _/ \
+    / \_/
+ _  \_/
+/ \_/ \_
+\_/ \_/ \
+/ \_/ \_/
+\_/ \
+  \_/
+12 11
+ _       _
+/ \_    / \
+\_/ \   \_/
+  \_/
+ _/ \    _
+/ \_/   / \
+\_/  _  \_/
+    / \
+    \_/
+       _
+      / \
+      \_/
+8 11
+ _   _   _
+/ \_/ \_/ \
+\_/ \_/ \_/
+/ \_/ \_/ \
+\_/ \_/ \_/
+/ \_/ \_/ \
+\_/ \_/ \_/
+  \_/ \_/
+10 19
+ _               _
+/ \_   _   _    / \
+\_/ \_/ \ / \_  \_/
+/ \_/ \_/ \_/ \ / \
+\_/ \_/ \_/ \_/ \_/
+/ \_/ \_/ \_/ \_/ \
+\_/ \_/ \_/ \_/ \_/
+/ \_/ \_/ \_/ \_/ \
+\_/ \_/ \_/ \_/ \_/
+  \_/ \_/ \_/ \_/
+3 3
+ _
+/ \
+\_/
+16 11
+ _   _   _
+/ \_/ \_/ \
+\_/ \_/ \_/
+/ \_/ \_/ \
+\_/ \_/ \_/
+  \_/ \_/ \
+  / \_/ \_/
+  \_/ \_/
+  / \_/ \_
+  \_/ \_/ \
+ _   _/ \_/
+/ \_/ \_/ \
+\_/ \_/ \_/
+/ \_/ \_/
+\_/ \_/ \
+  \_/ \_/
+8 9
+ _
+/ \
+\_/
+
+
+       _
+      / \
+      \_/
+3 7
+ _   _
+/ \ / \
+\_/ \_/
+17 15
+             _
+       _   _/ \
+      / \_/ \_/
+      \_/ \_/
+      / \_/
+      \_/ \_
+        \_/ \
+          \_/
+          / \
+          \_/
+ _       _/ \
+/ \     / \_/
+\_/     \_/
+       _   _
+      / \ / \_
+      \_/ \_/ \
+            \_/
+19 13
+     _
+   _/ \_   _
+ _/ \_/ \ / \
+/ \_/ \_/ \_/
+\_/ \_/  _/ \
+/ \_/ \_/ \_/
+\_/ \_/ \_/ \
+/ \_/ \_/ \_/
+\_/ \_/  _/ \
+  \_/ \_/ \_/
+ _/ \_/ \_/ \
+/ \_/ \_/ \_/
+\_/ \_/  _/ \
+/ \_/   / \_/
+\_/ \_  \_/ \
+  \_/ \_/ \_/
+ _/ \_/ \_/
+/ \_/ \_/ \
+\_/     \_/  '''
+
+inp_str = '''1
+10 19
+         _   _
+   _    / \_/ \_
+ _/ \_  \_/ \_/ \_
+/ \_/ \ / \_/ \_/ \
+\_/ \_/ \_/ \_/ \_/
+  \_/  _   _/ \_/
+ _/ \_/ \_/ \_/ \_
+/ \_/ \_/ \_/ \_/ \
+\_/ \_/ \_/ \_/ \_/
+  \_/
+
+'''
 # алгоритм
 # обобщенно:
-# находим параметры 1 hex-а,;
+# находим параметры 1 hex-а;
 # начинаем "заполнять" всю карту (функция из 2.py не заменяет символы, а возвращает False/True);
 # в цикле если все символы совпали - пропускаем, иначе рисуем на всех пробельных участках волны
-import sys
-input = sys.stdin.readline
 
-def get_hex_param(map, n, m) -> tuple[int, int, bool]:
+def get_hex_param(map, n, m) -> tuple[int, int]:
     width = 0
     height = 0
 
@@ -26,7 +322,6 @@ def get_hex_param(map, n, m) -> tuple[int, int, bool]:
                     interest_x_idx = x_idx - 1
                     interest_y_idx = y_idx + 1
                     start_head_idx = x_idx
-                    start_head_y_idx = y_idx
                     width += 1
                 elif prev_cell == "_":
                     width += 1
@@ -58,17 +353,13 @@ def get_hex_param(map, n, m) -> tuple[int, int, bool]:
             height_is_uknown = False
             break
 
-    # Определяем с какого ряда начинается карта четный/нечетный(+отступ)
-    isOdd = True # первая строка "нечетная" по умолчанию
-    hex_width = height+width+height
-    hex_in_odd_row = (m+width)//(hex_width+width)
+    # если hex в первой строке не в четных ячейках
+    isOdd = True # первая строка "нечетная"
     odd_valid_idx = [height]
     pre_index = height
-
-    for i in range(hex_in_odd_row-1):
+    for i in range(m):
         v_idx = pre_index +  width * 2 + height * 2
         odd_valid_idx.append(v_idx)
-        pre_index = v_idx
     if start_head_idx not in odd_valid_idx:
         isOdd = False
 
@@ -76,9 +367,12 @@ def get_hex_param(map, n, m) -> tuple[int, int, bool]:
     return width, height, isOdd
 
 def drow_hex_v3(w, h) -> list:
-    curFig = []
     # шапка
-    curFig.append(["x"] * h + ["_"] * w)
+    curFig = []
+    header = ["x" for __ in range(h)]
+    for __ in range(w):
+        header.append("_")
+    curFig.append(header)
 
     # body верх
     curMargin = h-1
@@ -176,6 +470,7 @@ def draw_map_v2(m, n, width, height, current_map, isOdd) -> list[list,...]:
                 if it_is_hex:
                     input_hex(index_map, width, height, xIdx, yIdx, hex_data)
                 else:
+                    # index_map[yIdx][xIdx] = '0'
                     pass
                 xIdx += stepX
             isOdd = False
@@ -187,6 +482,7 @@ def draw_map_v2(m, n, width, height, current_map, isOdd) -> list[list,...]:
                 if it_is_hex:
                     input_hex(index_map, width, height, xIdx, yIdx, hex_data)
                 else:
+                    # index_map[yIdx][xIdx] = '0'
                     pass
                 xIdx += stepX
             isOdd = True
@@ -195,26 +491,45 @@ def draw_map_v2(m, n, width, height, current_map, isOdd) -> list[list,...]:
     return index_map
 
 
-case_amount = int(input())
+input_rows = inp_str.split('\n') # 1 заменить на stdin
+case_amount = int(input_rows[0]) # 1 заменить на stdin
 
+row_idx = 1 # убрать при stdin
+import sys
 for __ in range(case_amount):
+    n, m = map(int, input_rows[row_idx].split()) # 2 заменить на stdin
 
-    n, m = map(int, input().split())
+    row_idx += 1 # убрать при stdin
 
     current_map = []
     for j in range(n):
-        input_row = input()
+        input_row = input_rows[row_idx] # 3 заменить на stdin
+        print(repr(input_row))
+        print(len(input_row), m)
         # добавляем пробелы если их не было
         if len(input_row) < m:
             for __ in range(m - len(input_row)):
                 input_row += ' '
+        elif len(input_row) > m:
 
+            input_row = input_row[:m] + '\n'
+        print(input_row)
         current_map.append(list(input_row))
 
+        row_idx += 1 # убрать при stdin
+
+    # print(current_map)
     width, height, isOdd= get_hex_param(current_map, n, m)
     water_map = draw_map_v2(m, n, width, height, current_map, isOdd)
-
+    print(' INPUT ') # убрать
+    for map_row in current_map:
+        # print(map_row)
+        print(''.join(map_row))
+    print(' OUTPUT ') # убрать
     for map_row in water_map:
-        mRow = ''.join(map_row)
-        sys.stdout.write(mRow + '\n')
-    sys.stdout.write('\n')
+
+        print(''.join(map_row)) # 4 заменить на stdout
+    print()
+
+    # print('w:', width, 'h:', height) # убрать
+    # print('\n\n') # убрать
