@@ -1,0 +1,85 @@
+@media (max-width: 1100px) {
+    #gameContainer {
+        flex-direction: column;
+    }
+
+    .game-area {
+        max-width: 100%;
+    }
+
+    .canvasContainer {
+        width: 100%;
+        max-width: 800px;
+    }
+
+    #scoreBoard {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        max-height: 400px;
+    }
+
+    #gameMenu {
+        height: 80px;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 10px;
+    }
+
+    .btnMenu {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .game-title {
+        font-size: 2rem;
+    }
+
+    #gameMenu {
+        height: auto;
+        padding: 15px;
+        flex-direction: column;
+    }
+
+    .btnMenu {
+        width: 100%;
+        padding: 14px;
+        font-size: 1.1rem;
+    }
+
+    .canvasContainer {
+        height: 400px;
+    }
+
+    #scoreBoard {
+        padding: 15px;
+    }
+
+    #settingsWindow {
+        width: 95%;
+        padding: 20px;
+    }
+
+    #settingsWindow h3 {
+        font-size: 1.5rem;
+    }
+}
+/* Адаптивность для таблицы */
+@media (max-width: 1100px) {
+    #scoreTable {
+        max-height: 250px;
+    }
+}
+
+@media (max-width: 600px) {
+    #scoreTable {
+        max-height: 200px;
+        font-size: 0.85rem;
+    }
+
+    #scoreTable th, #scoreTable td {
+        padding: 8px 6px;
+    }
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Поиск участия · Светлая</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #f8fbff 0%, #e6f2ff 50%, #f0f7ff 100%);
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      color: #1a2b4d;
+    }
+    .canvas {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .human {
+      position: relative;
+      width: 60px;
+      height: 120px;
+      margin-bottom: 40px;
+      animation: pulse 4s infinite;
+    }
+    .human::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      background: #4361ee;
+      border-radius: 50%;
+      box-shadow: 0 0 25px rgba(67, 97, 238, 0.4);
+      animation: float 3s ease-in-out infinite;
+    }
+    .human::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 60px;
+      background: linear-gradient(to bottom, #4361ee, #4895ef);
+      border-radius: 10px;
+      animation: reach 5s infinite;
+    }
+    .network {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0.15;
+      background:
+        radial-gradient(circle at 20% 30%, #4361ee 1px, transparent 2px),
+        radial-gradient(circle at 70% 60%, #4895ef 1px, transparent 2px),
+        radial-gradient(circle at 40% 80%, #4cc9f0 1px, transparent 2px),
+        radial-gradient(circle at 90% 20%, #7209b7 1px, transparent 2px);
+      background-size: 70px 70px;
+      animation: drift 30s linear infinite;
+    }
+    .connection {
+      position: absolute;
+      width: 2px;
+      background: linear-gradient(to top, transparent, #4361ee, transparent);
+      height: 150px;
+      top: calc(50% - 40px);
+      animation: connect 3s infinite alternate;
+    }
+    .connection:nth-child(1) { left: 30%; transform-origin: bottom; transform: rotate(-25deg); }
+    .connection:nth-child(2) { left: 45%; transform-origin: bottom; transform: rotate(-10deg); }
+    .connection:nth-child(3) { left: 55%; transform-origin: bottom; transform: rotate(10deg); }
+    .connection:nth-child(4) { left: 70%; transform-origin: bottom; transform: rotate(25deg); }
+    .node {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #4361ee;
+      box-shadow: 0 0 10px rgba(67, 97, 238, 0.6);
+      border: 2px solid white;
+    }
+    .node:nth-child(1) { top: 25%; left: 25%; animation: node-pulse 4s infinite 0.5s; }
+    .node:nth-child(2) { top: 40%; left: 75%; animation: node-pulse 5s infinite 1s; }
+    .node:nth-child(3) { top: 70%; left: 35%; animation: node-pulse 6s infinite 1.5s; }
+    .node:nth-child(4) { top: 60%; left: 60%; animation: node-pulse 4.5s infinite 2s; }
+    .text {
+      position: absolute;
+      bottom: 10%;
+      text-align: center;
+      max-width: 600px;
+      font-size: 1.4rem;
+      line-height: 1.7;
+      font-weight: 500;
+      opacity: 0.85;
+      color: #1a2b4d;
+      animation: fade-in 3s ease-out;
+    }
+    .text span {
+      display: inline-block;
+      animation: text-reveal 2s forwards;
+    }
+    .text span:nth-child(1) { animation-delay: 0.2s; }
+    .text span:nth-child(2) { animation-delay: 0.4s; }
+    .text span:nth-child(3) { animation-delay: 0.6s; }
+    .text span:nth-child(4) { animation-delay: 0.8s; }
+    .text span:nth-child(5) { animation-delay: 1.0s; }
+
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    @keyframes float { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -8px); } }
+    @keyframes reach { 0%,100% { height: 60px; } 50% { height: 75px; } }
+    @keyframes drift { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+    @keyframes connect { from { opacity: 0.2; height: 50px; } to { opacity: 0.8; height: 180px; } }
+    @keyframes node-pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } }
+    @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 0.85; transform: translateY(0); } }
+    @keyframes text-reveal { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="network"></div>
+    
+    <div class="node"></div>
+    <div class="node"></div>
+    <div class="node"></div>
+    <div class="node"></div>
+
+    <div class="connection"></div>
+    <div class="connection"></div>
+    <div class="connection"></div>
+    <div class="connection"></div>
+
+    <div class="human"></div>
+
+    <div class="text">
+      <span>ищу</span> <span>связь</span> <span>с</span> <span>теми,</span> <span>кто строит будущее</span>
+    </div>
+  </div>
+</body>
+</html>

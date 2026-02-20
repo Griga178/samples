@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прыгай - Тренировка реакции и точности</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body id="body">
+    <!-- СТРУКТУРА БЕЗ СКРИПТОВ -->
+    <div class="container">
+        <h1 class="game-title">ПРЫГАЙ</h1>
+
+        <div id="gameContainer">
+            <div class="game-area">
+                <div class="canvasContainer">
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    <!-- <div class="canvas-placeholder">
+                        <h3>Тренируй реакцию и точность!</h3>
+                        <p>Перемещайте курсор к появляющимся кругам как можно быстрее и точнее. Каждый успешный клик приносит очки в зависимости от скорости и точности попадания.</p>
+                        <p>Настройте сложность в меню "Настройки" - измените количество целей, их размер и дистанцию перемещения.</p>
+                    </div> -->
+                </div>
+                <div id="gameMenu">
+                    <button class="btnMenu" id="startButton">
+                        <span>🚀</span> Начать
+                    </button>
+                    <button class="btnMenu" id="restartButton" style="display: none;">
+                        <span>🔄</span> Обновить
+                    </button>
+                    <!-- <button class="btnMenu" id="settingsButton">
+                        <span>⚙️</span> Настройки
+                    </button> -->
+                    <button class="btnMenu" id="exitButton" style="display: none;">
+                        <span>🏠</span> Выход
+                    </button>
+                </div>
+            </div>
+
+            <div id="scoreBoard">
+                <h2>Результаты</h2>
+                <div style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); background: rgba(15, 23, 42, 0.6);">
+                    <table id="scoreTable">
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th>
+                                    <svg class="svgHeader" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                </th>
+                                <th>
+                                    <svg class="svgHeader" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 20s-4-8-8-12 8-12 8-12 8 8 8 12-4 8-8 12z"></path>
+                                    </svg>
+                                </th>
+                                <th>
+                                    <svg class="svgHeader" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </th>
+                                <th>
+                                    <svg class="svgHeader" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                                    </svg>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Результаты будут добавляться динамически -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="instructions">
+                    <h3>🎯 Как играть</h3>
+                </div>
+
+                <div class="stat-card">
+                    <h4>Лучший результат</h4>
+                    <div class="stat-value">0.0%</div>
+                    <div>точность</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно настроек -->
+    <div id="settingsModal">
+        <div id="settingsWindow">
+            <button class="modal-close" id="closeModalButton">×</button>
+            <h3>Настройки игры</h3>
+            <label for="circlesAmount">Количество целей:</label>
+            <input type="number" id="circlesAmount" value="6" min="1" max="20">
+
+            <label for="radius">Радиус кругов (пиксели):</label>
+            <input type="number" id="radius" value="25" min="10" max="60">
+
+            <label for="distance">Дистанция прыжка (пиксели):</label>
+            <input type="number" id="distance" value="150" min="50" max="300">
+
+            <button class="button" id="saveButton">Сохранить настройки</button>
+            <button class="button" id="closeSettingsButton">Отмена</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно правил -->
+    <div id="rulesModal">
+        <div id="rulesWindow">
+            <button class="modal-close" id="closeRulesButton">×</button>
+            <h3>Правила игры "Прыгай"</h3>
+            <ul>
+                <li>Нажмите кнопку "Начать" для старта игры</li>
+                <li>Быстро и точно наводите курсор на появляющиеся круги</li>
+                <li>Чем быстрее вы попадёте в цель, тем выше будет ваш балл</li>
+                <li>Точность попадания влияет на итоговый результат</li>
+                <li>Игра завершится после выполнения всех целей</li>
+                <li>Настройте сложность в меню "Настройки"</li>
+                <li>Постарайтесь попасть в центр круга для максимального бонуса</li>
+                <li>В таблице отображаются: время, плавность, точность и отклонение</li>
+            </ul>
+            <button class="button" id="closeRulesModalButton">Понятно, к игре!</button>
+        </div>
+    </div>
+
+    <!-- Подключение основного скрипта -->
+    <script src="js/core/Circle.js"></script>
+    <script src="js/utils/CanvasHelper.js"></script>
+    <script src="js/core/Analyzer.js"></script>
+    <script src="js/core/Game.js"></script>
+    <script src="js/ui/Menu.js"></script>
+    <script src="js/ui/ModalManager.js"></script>
+    <script src="js/ui/ResultsTable.js"></script>
+    <script src="config/gameConfig.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Волшебный Холст | Учись рисовать буквы!</title>
+  <style>
+    :root {
+      --primary: #6a5acd;
+      --success: #4caf50;
+      --warning: #ff9800;
+      --canvas-bg: #f8f9ff;
+      --point: #ff5252;
+      --point-active: #ff1744;
+      --line-complete: #43a047;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #bbdefb);
+      color: #212121;
+      line-height: 1.5;
+      padding: 15px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+    }
+
+    .canvas-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      padding: 20px;
+      text-align: center;
+    }
+
+    canvas {
+      background-color: var(--canvas-bg);
+      border: 4px dashed var(--primary);
+      border-radius: 16px;
+      cursor: crosshair;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: var(--primary);
+      margin-bottom: 10px;
+      font-size: 2.2rem;
+      text-shadow: 2px 2px 0 #ffd54f;
+    }
+
+    .subtitle {
+      color: #546e7a;
+      margin-bottom: 25px;
+      font-size: 1.3rem;
+    }
+
+    .mode-btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+    }
+
+    .mode-btn:hover { transform: translateY(-2px); }
+    .mode-btn:active { transform: translateY(2px); }
+
+    .learn-mode { background: linear-gradient(to right, #81c784, #43a047); color: white; }
+    .create-mode { background: linear-gradient(to right, #ffb74d, #ffa726); color: white; }
+    .apply-btn { background: linear-gradient(to right, #64b5f6, #1976d2); color: white; }
+
+    .letters-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .letter-btn {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      background: #e3f2fd;
+      border: 3px solid var(--primary);
+      font-size: 1.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .letter-btn:hover {
+      background: #bbdefb;
+      transform: scale(1.05);
+    }
+
+    .letter-btn.active {
+      background: #4fc3f7;
+      border-color: #0288d1;
+      box-shadow: 0 0 15px rgba(2, 136, 209, 0.5);
+    }
+
+    .status {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 16px;
+      font-weight: bold;
+      min-height: 28px;
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .instructions {
+      background: #e3f2fd;
+      border-left: 4px solid var(--primary);
+      padding: 12px;
+      border-radius: 0 12px 12px 0;
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .letters-grid { grid-template-columns: repeat(6, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="canvas-container">
+      <h1>✨ Волшебный Холст ✨</h1>
+      <div class="subtitle">Соединяй точки и учись рисовать буквы!</div>
+      <canvas id="drawingCanvas" width="600" height="500"></canvas>
+      <div id="status" class="status">Выбери букву в правой панели, чтобы начать!</div>
+    </div>
+
+    <div class="sidebar">
+      <div class="panel">
+        <h2>🎨 Режимы</h2>
+        <button class="mode-btn learn-mode" data-mode="learn">Учиться рисовать</button>
+        <button class="mode-btn create-mode" data-mode="create">Создать свою фигуру</button>
+        <div class="instructions">
+          <strong>💡 Совет:</strong> В режиме «Создать» нарисуй фигуру и нажми «Применить», чтобы увидеть код в консоли браузера (F12)!
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>🔤 Выбери букву</h2>
+        <div class="letters-grid" id="lettersGrid">
+          <!-- Кнопки букв будут добавлены через JS -->
+        </div>
+      </div>
+
+      <div class="panel" id="createPanel" style="display:none;">
+        <h2>✏️ Твоя фигура</h2>
+        <button class="mode-btn apply-btn" id="applyBtn">Применить и показать код</button>
+        <div class="instructions">
+          Нарисуй фигуру пальцем или мышкой. Можно сделать несколько штрихов!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ======================
+    // 1. ИНИЦИАЛИЗАЦИЯ
+    // ======================
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const lettersGrid = document.getElementById('lettersGrid');
+    const createPanel = document.getElementById('createPanel');
+    const applyBtn = document.getElementById('applyBtn');
+
+    // Настройки
+    const POINT_RADIUS = 8;
+    const ACTIVE_POINT_RADIUS = 12;
+    const LINE_WIDTH = 3;
+    const CANVAS_SCALE = window.devicePixelRatio || 1;
+
+    // Состояние приложения
+    const state = {
+      mode: 'learn', // 'learn' | 'create'
+      currentLetter: null,
+      currentStep: 0,
+      isDrawing: false,
+      startX: 0,
+      startY: 0,
+      strokes: [], // Для режима создания: массив штрихов [[{x,y},...], ...]
+      currentStroke: [], // Текущий штрих в режиме создания
+      lettersData: {} // Загружается динамически
+    };
+
+    // ======================
+    // 2. ДАННЫЕ БУКВ (минималистичный пример)
+    // ======================
+    // В реальном проекте можно загрузить из JSON или расширить
+    const SAMPLE_LETTERS = {
+      'А': { points: [[[150, 400], [300, 100]], [[300, 100], [450, 400]], [[200, 250], [400, 250]]] },
+      'Б': { points: [[[150, 150], [250, 150], [250, 300], [150, 300]], [[150, 300], [150, 450], [250, 450]]] },
+      'В': { points: [[[150, 150], [250, 150], [250, 300], [150, 300], [150, 150]], [[150, 300], [250, 300], [250, 450], [150, 450]]] },
+      'Г': { points: [[[150, 150], [300, 150], [300, 450]]] },
+      'Д': { points: [[[150, 450], [300, 150], [450, 450]], [[300, 150], [300, 300]]] },
+      'Е': { points: [[[400, 150], [150, 150], [150, 450], [400, 450]], [[150, 300], [300, 300]]] },
+      "T": { points: [
+    [
+      [
+        0.1883116883116883,
+        0.20739462209302326
+      ],
+      [
+        0.18993506493506493,
+        0.20739462209302326
+      ],
+      [
+        0.19155844155844157,
+        0.20739462209302326
+      ],
+      [
+        0.19480519480519481,
+        0.20933260658914726
+      ],
+      [
+        0.20454545454545453,
+        0.2112705910852713
+      ],
+      [
+        0.2159090909090909,
+        0.21320857558139533
+      ],
+      [
+        0.2418831168831169,
+        0.21320857558139533
+      ],
+      [
+        0.2711038961038961,
+        0.21320857558139533
+      ],
+      [
+        0.3051948051948052,
+        0.21320857558139533
+      ],
+      [
+        0.3538961038961039,
+        0.21320857558139533
+      ],
+      [
+        0.40259740259740256,
+        0.21320857558139533
+      ],
+      [
+        0.45129870129870125,
+        0.21320857558139533
+      ],
+      [
+        0.5016233766233766,
+        0.21320857558139533
+      ],
+      [
+        0.5503246753246753,
+        0.2151465600775194
+      ],
+      [
+        0.6022727272727273,
+        0.2151465600775194
+      ],
+      [
+        0.6444805194805195,
+        0.2151465600775194
+      ],
+      [
+        0.6785714285714285,
+        0.2151465600775194
+      ],
+      [
+        0.7094155844155844,
+        0.2151465600775194
+      ],
+      [
+        0.7337662337662337,
+        0.2151465600775194
+      ],
+      [
+        0.7516233766233766,
+        0.21320857558139533
+      ],
+      [
+        0.7678571428571428,
+        0.2112705910852713
+      ],
+      [
+        0.7808441558441558,
+        0.2112705910852713
+      ],
+      [
+        0.7922077922077922,
+        0.20933260658914726
+      ],
+      [
+        0.801948051948052,
+        0.20739462209302326
+      ],
+      [
+        0.8051948051948051,
+        0.20739462209302326
+      ],
+      [
+        0.8068181818181819,
+        0.20739462209302326
+      ],
+      [
+        0.8051948051948051,
+        0.20739462209302326
+      ],
+      [
+        0.8035714285714285,
+        0.20739462209302326
+      ],
+      [
+        0.801948051948052,
+        0.20739462209302326
+      ],
+      [
+        0.8003246753246753,
+        0.20739462209302326
+      ]
+    ],
+    [
+      [
+        0.4772727272727273,
+        0.2228984980620155
+      ],
+      [
+        0.4772727272727273,
+        0.2248364825581395
+      ],
+      [
+        0.4772727272727273,
+        0.22871245155038758
+      ],
+      [
+        0.4772727272727273,
+        0.23258842054263565
+      ],
+      [
+        0.4772727272727273,
+        0.23646438953488372
+      ],
+      [
+        0.4772727272727273,
+        0.24421632751937983
+      ],
+      [
+        0.4772727272727273,
+        0.25778221899224807
+      ],
+      [
+        0.4805194805194805,
+        0.2713481104651163
+      ],
+      [
+        0.4821428571428572,
+        0.2849140019379845
+      ],
+      [
+        0.4837662337662338,
+        0.30429384689922484
+      ],
+      [
+        0.48538961038961037,
+        0.31979772286821706
+      ],
+      [
+        0.48538961038961037,
+        0.3372395833333333
+      ],
+      [
+        0.48538961038961037,
+        0.35274345930232553
+      ],
+      [
+        0.48538961038961037,
+        0.37018531976744184
+      ],
+      [
+        0.48538961038961037,
+        0.38375121124031003
+      ],
+      [
+        0.48538961038961037,
+        0.40119307170542634
+      ],
+      [
+        0.48538961038961037,
+        0.41669694767441856
+      ],
+      [
+        0.4886363636363636,
+        0.439952761627907
+      ],
+      [
+        0.4886363636363636,
+        0.46514656007751937
+      ],
+      [
+        0.4902597402597403,
+        0.4864643895348837
+      ],
+      [
+        0.4902597402597403,
+        0.501968265503876
+      ],
+      [
+        0.4902597402597403,
+        0.5194101259689922
+      ],
+      [
+        0.4902597402597403,
+        0.5329760174418604
+      ],
+      [
+        0.4902597402597403,
+        0.5484798934108527
+      ],
+      [
+        0.4902597402597403,
+        0.563983769379845
+      ],
+      [
+        0.4902597402597403,
+        0.5794876453488371
+      ],
+      [
+        0.4902597402597403,
+        0.5969295058139534
+      ],
+      [
+        0.4886363636363636,
+        0.6124333817829457
+      ],
+      [
+        0.4886363636363636,
+        0.627937257751938
+      ],
+      [
+        0.4886363636363636,
+        0.6395651647286821
+      ],
+      [
+        0.4886363636363636,
+        0.6511930717054263
+      ],
+      [
+        0.4886363636363636,
+        0.6589450096899224
+      ],
+      [
+        0.4886363636363636,
+        0.6666969476744187
+      ],
+      [
+        0.487012987012987,
+        0.6802628391472868
+      ],
+      [
+        0.487012987012987,
+        0.693828730620155
+      ],
+      [
+        0.487012987012987,
+        0.7054566375968991
+      ],
+      [
+        0.487012987012987,
+        0.7170845445736433
+      ],
+      [
+        0.487012987012987,
+        0.7228984980620156
+      ],
+      [
+        0.487012987012987,
+        0.7306504360465117
+      ],
+      [
+        0.48538961038961037,
+        0.7384023740310077
+      ],
+      [
+        0.48538961038961037,
+        0.7422783430232558
+      ],
+      [
+        0.48538961038961037,
+        0.7461543120155039
+      ],
+      [
+        0.48538961038961037,
+        0.7500302810077519
+      ],
+      [
+        0.48538961038961037,
+        0.75390625
+      ],
+      [
+        0.48538961038961037,
+        0.755844234496124
+      ],
+      [
+        0.48538961038961037,
+        0.7577822189922481
+      ],
+      [
+        0.4821428571428572,
+        0.7635961724806201
+      ],
+      [
+        0.4821428571428572,
+        0.7694101259689922
+      ],
+      [
+        0.4821428571428572,
+        0.7732860949612402
+      ],
+      [
+        0.4821428571428572,
+        0.7771620639534883
+      ],
+      [
+        0.4821428571428572,
+        0.7810380329457364
+      ],
+      [
+        0.4805194805194805,
+        0.7849140019379844
+      ],
+      [
+        0.4805194805194805,
+        0.7868519864341086
+      ],
+      [
+        0.4805194805194805,
+        0.7887899709302326
+      ],
+      [
+        0.4805194805194805,
+        0.7907279554263567
+      ]
+    ]
+  ]
+}
+    };
+
+    // ======================
+    // 3. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+    // ======================
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Фон с легким узором для детей
+      ctx.fillStyle = '#f8f9ff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawPoint(x, y, isActive = false) {
+      ctx.beginPath();
+      ctx.arc(x, y, isActive ? ACTIVE_POINT_RADIUS : POINT_RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle = isActive ? '#ff1744' : '#ff5252';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Эффект "сияния" для активной точки
+      if (isActive) {
+        const gradient = ctx.createRadialGradient(x, y, 5, x, y, 20);
+        gradient.addColorStop(0, 'rgba(255, 23, 68, 0.6)');
+        gradient.addColorStop(1, 'rgba(255, 23, 68, 0)');
+        ctx.beginPath();
+        ctx.arc(x, y, 20, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
+    }
+
+    function drawLine(start, end, isComplete = false) {
+      ctx.beginPath();
+      ctx.moveTo(start[0], start[1]);
+      ctx.lineTo(end[0], end[1]);
+      ctx.strokeStyle = isComplete ? '#43a047' : '#6a5acd';
+      ctx.lineWidth = isComplete ? 4 : 2;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Стрелка для подсказки направления (только в обучении)
+      if (!isComplete && state.mode === 'learn') {
+        const angle = Math.atan2(end[1] - start[1], end[0] - start[0]);
+        const arrowLen = 15;
+        const arrowX = end[0] - arrowLen * Math.cos(angle - Math.PI/6);
+        const arrowY = end[1] - arrowLen * Math.sin(angle - Math.PI/6);
+
+        ctx.beginPath();
+        ctx.moveTo(end[0], end[1]);
+        ctx.lineTo(arrowX, arrowY);
+        ctx.strokeStyle = '#ff9800';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      }
+    }
+
+    function showStatus(message, isSuccess = false) {
+      statusEl.textContent = message;
+      statusEl.style.background = isSuccess ? '#e8f5e9' : '#e3f2fd';
+      statusEl.style.color = isSuccess ? '#2e7d32' : '#1565c0';
+    }
+
+    // Нормализация координат для экспорта
+    function normalizePoint(point) {
+      return [
+        parseFloat((point.x / canvas.width).toFixed(3)),
+        parseFloat((point.y / canvas.height).toFixed(3))
+      ];
+    }
+
+    // ======================
+    // 4. РЕЖИМ ОБУЧЕНИЯ
+    // ======================
+    function renderLearnMode() {
+      clearCanvas();
+
+      if (!state.currentLetter) return;
+
+      const letter = state.currentLetter;
+      const currentPairIndex = state.currentStep;
+
+      // Рисуем все завершённые линии
+      letter.points.forEach((pair, idx) => {
+        if (idx < currentPairIndex) {
+          drawLine(pair[0], pair[1], true);
+        }
+      });
+
+      // Рисуем текущую пару точек
+      if (currentPairIndex < letter.points.length) {
+        const [start, end] = letter.points[currentPairIndex];
+        drawPoint(start[0], start[1], true); // Активная точка
+        drawPoint(end[0], end[1]);
+        drawLine(start, end);
+      }
+
+      // Рисуем оставшиеся точки
+      letter.points.forEach((pair, idx) => {
+        if (idx > currentPairIndex) {
+          drawPoint(pair[0][0], pair[0][1]);
+          drawPoint(pair[1][0], pair[1][1]);
+        }
+      });
+
+      // Сообщение о прогрессе
+      if (state.currentStep >= letter.points.length) {
+        showStatus(`🎉 Ура! Ты нарисовал(а) букву "${letter.title}"! Выбери следующую.`, true);
+        // Эффект конфетти можно добавить здесь (опционально)
+      } else {
+        showStatus(`👉 Проведи линию от красной точки к серой!`);
+      }
+    }
+
+    function startLetter(letterKey) {
+      state.currentLetter = { ...SAMPLE_LETTERS[letterKey], title: letterKey };
+      state.currentStep = 0;
+      document.querySelectorAll('.letter-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`[data-letter="${letterKey}"]`).classList.add('active');
+      renderLearnMode();
+    }
+
+    function handleCanvasClickLearn(x, y) {
+      if (!state.currentLetter || state.currentStep >= state.currentLetter.points.length) return;
+
+      const [start, end] = state.currentLetter.points[state.currentStep];
+
+      // Простая проверка: попал ли в конечную точку (с допуском)
+      const distance = Math.hypot(x - end[0], y - end[1]);
+      if (distance < 30) { // 30px допуск для детей
+        state.currentStep++;
+        renderLearnMode();
+
+        // Вибрация при успехе (если поддерживается)
+        if (navigator.vibrate) navigator.vibrate(50);
+      }
+    }
+
+    // ======================
+    // 5. РЕЖИМ СОЗДАНИЯ
+    // ======================
+    function renderCreateMode() {
+      clearCanvas();
+
+      // Рисуем все сохранённые штрихи
+      state.strokes.forEach(stroke => {
+        if (stroke.length < 2) return;
+        ctx.beginPath();
+        ctx.moveTo(stroke[0].x, stroke[0].y);
+        for (let i = 1; i < stroke.length; i++) {
+          ctx.lineTo(stroke[i].x, stroke[i].y);
+        }
+        ctx.strokeStyle = '#e91e63';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      });
+
+      // Рисуем текущий штрих
+      if (state.currentStroke.length > 1) {
+        ctx.beginPath();
+        ctx.moveTo(state.currentStroke[0].x, state.currentStroke[0].y);
+        for (let i = 1; i < state.currentStroke.length; i++) {
+          ctx.lineTo(state.currentStroke[i].x, state.currentStroke[i].y);
+        }
+        ctx.strokeStyle = '#2196f3';
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+
+      showStatus('🎨 Рисуй! Сделай несколько штрихов. Нажми "Применить", когда закончишь.');
+    }
+
+    function startDrawing(x, y) {
+      state.isDrawing = true;
+      state.currentStroke = [{x, y}];
+    }
+
+    function continueDrawing(x, y) {
+      if (!state.isDrawing) return;
+      state.currentStroke.push({x, y});
+      renderCreateMode();
+    }
+
+    function stopDrawing() {
+      if (state.isDrawing && state.currentStroke.length > 1) {
+        state.strokes.push([...state.currentStroke]);
+      }
+      state.currentStroke = [];
+      state.isDrawing = false;
+    }
+
+    function applyDrawing() {
+      if (state.strokes.length === 0) {
+        alert('Сначала нарисуй фигуру!');
+        return;
+      }
+
+      // Преобразуем в формат {title, points}
+      const figureData = {
+        title: prompt('Как назвать фигуру? (например: "Звезда", "Дом")', 'МояФигура') || 'Фигура',
+        points: state.strokes.map(stroke =>
+          stroke.map(point => [point.x, point.y])
+        )
+      };
+
+      // Нормализуем для универсальности (опционально)
+      const normalizedData = {
+        title: figureData.title,
+        points: figureData.points.map(stroke =>
+          stroke.map(([x, y]) => [x / canvas.width, y / canvas.height])
+        )
+      };
+
+      console.log('🎨 Экспортированная фигура (нормализованная):');
+      console.log(JSON.stringify(normalizedData, null, 2));
+      console.log('💡 Совет: Скопируй этот объект и добавь в SAMPLE_LETTERS!');
+
+      // Сброс
+      state.strokes = [];
+      state.currentStroke = [];
+      renderCreateMode();
+      showStatus('✅ Фигура сохранена в консоль! (Открой DevTools → Console)', true);
+
+      // Визуальная обратная связь
+      statusEl.style.animation = 'pulse 0.5s';
+      setTimeout(() => { statusEl.style.animation = ''; }, 500);
+    }
+
+    // ======================
+    // 6. ОБРАБОТЧИКИ СОБЫТИЙ
+    // ======================
+    // Переключение режимов
+    document.querySelectorAll('[data-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.mode = btn.dataset.mode;
+        createPanel.style.display = state.mode === 'create' ? 'block' : 'none';
+
+        // Сброс состояния
+        state.currentLetter = null;
+        state.currentStep = 0;
+        if (state.mode === 'create') {
+          state.strokes = [];
+          state.currentStroke = [];
+        }
+
+        // Обновление интерфейса
+        document.querySelectorAll('.mode-btn').forEach(b => b.style.opacity = '0.7');
+        btn.style.opacity = '1';
+        render();
+      });
+    });
+
+    // Выбор буквы
+    Object.keys(SAMPLE_LETTERS).forEach(letter => {
+      const btn = document.createElement('button');
+      btn.className = 'letter-btn';
+      btn.textContent = letter;
+      btn.dataset.letter = letter;
+      btn.addEventListener('click', () => startLetter(letter));
+      lettersGrid.appendChild(btn);
+    });
+
+    // Применить фигуру
+    applyBtn.addEventListener('click', applyDrawing);
+
+    // События канваса (мышь + тач)
+    function getCanvasCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
+
+    function getTouchCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      return {
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY
+      };
+    }
+
+    // Mouse events
+    canvas.addEventListener('mousedown', (e) => {
+      const {x, y} = getCanvasCoords(e);
+      if (state.mode === 'learn') {
+        handleCanvasClickLearn(x, y);
+      } else {
+        startDrawing(x, y);
+      }
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (state.mode === 'create' && state.isDrawing) {
+        const {x, y} = getCanvasCoords(e);
+        continueDrawing(x, y);
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (state.mode === 'create') stopDrawing();
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      if (state.mode === 'create') stopDrawing();
+    });
+
+    // Touch events
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const {x, y} = getTouchCoords(e);
+      if (state.mode === 'learn') {
+        handleCanvasClickLearn(x, y);
+      } else {
+        startDrawing(x, y);
+      }
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (state.mode === 'create' && state.isDrawing) {
+        e.preventDefault();
+        const {x, y} = getTouchCoords(e);
+        continueDrawing(x, y);
+      }
+    });
+
+    canvas.addEventListener('touchend', () => {
+      if (state.mode === 'create') stopDrawing();
+    });
+
+    // ======================
+    // 7. ИНИЦИАЛИЗАЦИЯ И РЕНДЕР
+    // ======================
+    function render() {
+      if (state.mode === 'learn') {
+        renderLearnMode();
+      } else {
+        renderCreateMode();
+      }
+    }
+
+    // Запуск
+    function init() {
+      // Улучшение качества на ретина-дисплеях
+      canvas.width = canvas.offsetWidth * CANVAS_SCALE;
+      canvas.height = canvas.offsetHeight * CANVAS_SCALE;
+      ctx.scale(CANVAS_SCALE, CANVAS_SCALE);
+
+      // Старт в режиме обучения
+      document.querySelector('[data-mode="learn"]').click();
+      render();
+
+      // Приветственное сообщение
+      setTimeout(() => {
+        showStatus('👋 Привет! Выбери букву, чтобы начать учиться рисовать!', false);
+      }, 500);
+    }
+
+    // Запускаем при загрузке
+    window.addEventListener('load', init);
+    window.addEventListener('resize', () => {
+      // При ресайзе пересчитываем координаты (упрощённо)
+      render();
+    });
+  </script>
+</body>
+</html>
