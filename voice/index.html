@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализатор звука</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Запись и анализ звука</h1>
+
+        <div class="controls">
+            <button id="startRecordBtn" class="btn record">Начать запись</button>
+            <button id="stopRecordBtn" class="btn stop" disabled>Остановить запись</button>
+        </div>
+
+        <div id="player-container" style="display: none;">
+            <h3>Запись:</h3>
+            <audio id="audioPlayer" controls></audio>
+        </div>
+
+        <div id="analysis-blocks">
+            <!-- Блок для RMS -->
+            <div class="analysis-block">
+                <h3>Амплитуда (RMS)</h3>
+                <canvas id="rmsGraph" class="analysis-graph" width="400" height="100"></canvas>
+                <p>Текущее значение: <span id="rmsValue">0.00</span></p>
+            </div>
+            <!-- Сюда можно добавлять новые блоки -->
+
+            <!-- <div class="analysis-block" id="new-analysis">
+                <h3>Название анализа</h3>
+                <canvas class="analysis-graph" width="400" height="100"></canvas>
+                <p>Текущее значение: <span class="analysis-value">0.00</span></p>
+            </div> -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
