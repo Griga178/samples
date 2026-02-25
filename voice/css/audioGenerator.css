@@ -1,0 +1,125 @@
+/* Стили только для блока управления */
+.audio-generator-panel {
+    font-family: Arial, sans-serif;
+    max-width: 550px; /* чуть шире для двух колонок */
+    margin: 10px auto;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.audio-generator-panel h2 {
+    font-size: 1.3rem;
+    margin: 0 0 10px 0;
+    color: #333;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 4px;
+}
+/* Сетка для секций */
+.sections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+/* Общие стили секций */
+.audio-generator-panel .section {
+    padding: 8px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.audio-generator-panel .section h3 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #4CAF50;
+}
+/* Сетка для параметров внутри секции */
+.params-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6px 8px;
+    align-items: center;
+}
+.params-grid label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+}
+.params-grid input,
+.params-grid select {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+}
+.params-grid input[type="range"] {
+    padding: 0;
+}
+.params-grid .range-value {
+    font-size: 0.8rem;
+    color: #666;
+    text-align: right;
+}
+/* Для нереализованных параметров (заблокированы) */
+.params-grid input:disabled,
+.params-grid select:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+}
+/* Поле ввода для гармоник (занимает обе колонки) */
+.params-grid .full-width {
+    grid-column: span 2;
+}
+.hint {
+    font-size: 0.7rem;
+    color: #999;
+    margin-top: 4px;
+}
+/* Кнопки */
+.button-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 12px 0 8px;
+    flex-wrap: wrap;
+}
+.button-group button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 90px;
+    background: #4CAF50;
+    color: white;
+}
+.button-group button:hover {
+    background: #45a049;
+}
+.button-group button.save {
+    background: #2196F3;
+}
+.button-group button.download {
+    background: #ff9800;
+}
+.status {
+    margin-top: 8px;
+    padding: 6px;
+    background: #e9ecef;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #333;
+    text-align: center;
+}
+/* Медиа-запрос для узких экранов */
+@media (max-width: 480px) {
+    .sections-grid {
+        grid-template-columns: 1fr;
+    }
+}

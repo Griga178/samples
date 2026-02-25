@@ -1,0 +1,107 @@
+/* Стили только для блока .storage-panel */
+.storage-panel {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.storage-panel h2 {
+    margin: 0 0 16px 0;
+    font-size: 1.5rem;
+    color: #333;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 8px;
+}
+
+.storage-panel .record-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.storage-panel .record-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+.storage-panel .record-item:hover {
+    background: #f1f3f4;
+}
+
+.storage-panel .record-item.active {
+    background: #e3f2fd;
+    border-left: 4px solid #4CAF50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+}
+
+.storage-panel .record-info {
+    flex: 1;
+    font-weight: 500;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 12px;
+}
+
+.storage-panel .record-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.storage-panel .record-actions button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 60px;
+}
+
+.storage-panel .record-actions .play {
+    background: #4CAF50;
+    color: white;
+}
+
+.storage-panel .record-actions .play:hover {
+    background: #45a049;
+}
+
+.storage-panel .record-actions .download {
+    background: #2196F3;
+    color: white;
+}
+
+.storage-panel .record-actions .download:hover {
+    background: #1e88e5;
+}
+
+.storage-panel .record-actions .delete {
+    background: #f44336;
+    color: white;
+}
+
+.storage-panel .record-actions .delete:hover {
+    background: #e53935;
+}
+
+.storage-panel .empty-message {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
