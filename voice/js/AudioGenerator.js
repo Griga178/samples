@@ -76,12 +76,6 @@ class AudioGenerator {
         sourceNode.connect(gainNode);
         finalNode.connect(offlineCtx.destination);
 
-        // Запуск и остановка
-        sourceNode.start(0);
-        if (type !== 'noise') {
-            sourceNode.stop(duration);
-        }
-
         // Рендерим буфер (синхронно, но в реале это асинхронно)
         // Внимание: startRendering возвращает Promise, поэтому метод должен быть async
         // Но для простоты можно вернуть промис, либо сделать метод async.
