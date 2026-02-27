@@ -16,7 +16,7 @@
     <script src="Player.js"></script>
     <script>
         // Создаём экземпляры классов
-        const generator = new Generator({ chunkDuration: 0.05, type: 'sine' });
+        const generator = new Generator();
         const player = new Player({ gain: 0.7 });
 
         // Флаг, чтобы не запустить повторно
@@ -29,7 +29,7 @@
             // Запускаем генератор, который будет передавать буферы в плеер
             generator.start((buffer) => {
                 player.enqueueBuffer(buffer);
-            }, { frequency: 220, amplitude: 0.7 });
+            }, { frequency: 120, amplitude: 0.7 });
         });
 
         document.getElementById('stopBtn').addEventListener('click', () => {

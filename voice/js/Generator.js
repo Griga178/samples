@@ -21,7 +21,7 @@ class Generator {
         this.defaultOptions = {
             chunkDuration: 0.1, // длительность одного генерируемого куска
             type: 'sine',
-            frequency: 440,
+            frequency: 220,
             amplitude: 0.5,
             pan: 0,
             sampleRate: 44100,
