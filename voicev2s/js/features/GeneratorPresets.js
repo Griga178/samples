@@ -10,24 +10,20 @@ class GeneratorPresets {
       const data = localStorage.getItem(this.storageKey);
       this.presets = data ? JSON.parse(data) : [];
     } catch (e) {
-      console.error('Failed to load presets:', e);
       this.presets = [];
     }
   }
 
   _save() {
-    try {
-      localStorage.setItem(this.storageKey, JSON.stringify(this.presets));
-    } catch (e) {
-      console.error('Failed to save presets:', e);
-    }
+    localStorage.setItem(this.storageKey, JSON.stringify(this.presets));
   }
 
-  add(name, options) {
+  add(name, options, type = 'generator') {
     const preset = {
       id: crypto.randomUUID?.() || Date.now().toString(36),
-      name: name || `Preset ${this.presets.length + 1}`,
+      name: name || `${type === 'voice' ? 'voice' : 'preset'}_${Date.now().toString(36)}`,
       timestamp: Date.now(),
+      type,
       options: JSON.parse(JSON.stringify(options))
     };
     this.presets.push(preset);
@@ -38,11 +34,11 @@ class GeneratorPresets {
   remove(id) {
     const index = this.presets.findIndex(p => p.id === id);
     if (index !== -1) {
-      const removed = this.presets.splice(index, 1)[0];
+      this.presets.splice(index, 1);
       this._save();
-      return removed;
+      return true;
     }
-    return null;
+    return false;
   }
 
   get(id) {
@@ -72,19 +68,14 @@ class GeneratorPresets {
     return false;
   }
 
-  export(id) {
-    const preset = this.get(id);
-    if (preset) {
-      const blob = new Blob([JSON.stringify(preset, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${preset.name.replace(/[^a-z0-9]/gi, '_')}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      return true;
-    }
-    return false;
+  exportAll() {
+    const blob = new Blob([JSON.stringify(this.presets, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `presets_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   import(file) {
@@ -92,21 +83,21 @@ class GeneratorPresets {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const preset = JSON.parse(e.target.result);
-          if (preset.options && preset.options.harmonics) {
-            preset.id = crypto.randomUUID?.() || Date.now().toString(36);
-            preset.timestamp = Date.now();
-            this.presets.push(preset);
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            imported.forEach(p => {
+              p.id = crypto.randomUUID?.() || Date.now().toString(36);
+              this.presets.push(p);
+            });
             this._save();
-            resolve(preset);
+            resolve(imported.length);
           } else {
-            reject(new Error('Invalid preset format'));
+            reject(new Error('Invalid format'));
           }
         } catch (err) {
           reject(err);
         }
       };
-      reader.onerror = () => reject(new Error('File read error'));
       reader.readAsText(file);
     });
   }

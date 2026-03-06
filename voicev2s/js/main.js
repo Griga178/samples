@@ -490,7 +490,7 @@ _savePreset() {
       this.ui.presetsList.appendChild(div);
     });
   }
-  
+
   _toggleGenerator() {
   const btn = this.ui.toggleGenerator;
   if (!btn) return;

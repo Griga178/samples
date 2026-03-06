@@ -600,3 +600,51 @@ canvas {
   padding: 10px;
   text-align: center;
 }
+
+#generator-block, #presets-block, #track-block, #microphone-block {
+  background: #1a1a2e;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  color: #eee;
+}
+
+.gen-main, .track-controls, .mic-controls, .mic-filters {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+.gen-buttons, .track-buttons, .presets-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.generated-harmonic-item, .track-item, .preset-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: #16213e;
+  border-radius: 6px;
+  margin: 5px 0;
+}
+
+input, select, button {
+  padding: 8px 12px;
+  background: #0f3460;
+  border: 1px solid #00d9ff;
+  border-radius: 4px;
+  color: #eee;
+}
+
+button:hover {
+  background: #00d9ff;
+  color: #000;
+}
+
+.btn-apply { background: #00d9ff; color: #000; }
+.btn-rename { background: #f59e0b; color: #000; }
+.btn-delete { background: #ef4444; color: #fff; }

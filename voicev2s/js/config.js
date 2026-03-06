@@ -2,6 +2,11 @@
 const CONFIG = {
   // Analyzer
   ANALYZER_UPDATE_RATE: 30, // fps
+  HARMONICS_THRESHOLD: 0.3,
+
+  HARMONICS_AVERAGE_WINDOW: 50,
+  TRACK_MAX_ELEMENTS: 30,
+  TRACK_MAX_DURATION: 30,
 
   // AudioCatcher
   BUFFER_SIZE: 4096,
@@ -53,7 +58,7 @@ const CONFIG = {
 
   // Audio
   SAMPLE_RATE: 44100,
-  FFT_SIZE: 2048
+  FFT_SIZE: 4096
 };
 
 // Глобальный доступ для модулей без ES6 import

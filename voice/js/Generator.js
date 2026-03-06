@@ -1,181 +1,145 @@
-/**
- * Класс для непрерывной генерации звука по частям.
- * Генерирует буферы заданной длительности (chunkDuration) и передаёт их в callback.
- * Работает до вызова stop().
- */
-class Generator {
-    /**
-     * @param {Object} defaultOptions - Параметры генерации по умолчанию.
-     * @param {number} defaultOptions.chunkDuration - Длительность одного чанка в секундах (по умолчанию 0.1).
-     * @param {string} defaultOptions.type - Тип волны.
-     * @param {number} defaultOptions.frequency - Частота.
-     * @param {number} defaultOptions.amplitude - Амплитуда.
-     * @param {number} defaultOptions.pan - Панорама.
-     * @param {number} defaultOptions.sampleRate - Частота дискретизации.
-     * @param {number} defaultOptions.channels - Количество каналов.
-     * @param {Array} defaultOptions.harmonics - Гармоники.
-     * @param {Object} defaultOptions.filter - Фильтр.
-     * @param {Object} defaultOptions.fm - FM.
-     */
-    constructor(defaultOptions = {}) {
-        this.defaultOptions = {
-            chunkDuration: 0.1, // длительность одного генерируемого куска
-            type: 'sine',
-            frequency: 220,
-            amplitude: 0.5,
-            pan: 0,
-            sampleRate: 44100,
-            channels: 1,
-            harmonics: [],
-            filter: null,
-            fm: null,
-            ...defaultOptions
-        };
+class Generator extends EventEmitter {
+  constructor(audioContext) {
+    super();
+    this.audioContext = audioContext;
+    this.oscillators = [];
+    this.gainNodes = [];
+    this.masterGain = null;
+    this.isActive = false;
+    this.options = {
+      name: 'Default',
+      harmonics: [{ type: 'sine', frequency: 440, amplitude: 0.5 }]
+    };
+  }
 
-        this.isGenerating = false;
-        this.chunkIndex = 0; // для учёта времени при генерации
-        this.callback = null;
-        this.options = { ...this.defaultOptions };
+  start() {
+    if (this.isActive) return;
+    this._createNodes();
+    this.isActive = true;
+    this.emit('stateChange', true);
+  }
+
+  stop() {
+    if (!this.isActive) return;
+    this.oscillators.forEach(osc => {
+      try { osc.stop(); osc.disconnect(); } catch(e) {}
+    });
+    this.oscillators = [];
+    this.gainNodes.forEach(gain => {
+      try { gain.disconnect(); } catch(e) {}
+    });
+    this.gainNodes = [];
+    if (this.masterGain) {
+      this.masterGain.disconnect();
+      this.masterGain = null;
+    }
+    this.isActive = false;
+    this.emit('stateChange', false);
+  }
+
+  _createNodes() {
+    this.masterGain = this.audioContext.createGain();
+    this.masterGain.gain.value = 1;
+
+    this.options.harmonics.forEach((h, index) => {
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
+
+      osc.type = h.type;
+      osc.frequency.setValueAtTime(h.frequency, this.audioContext.currentTime);
+      gain.gain.setValueAtTime(h.amplitude, this.audioContext.currentTime);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start();
+
+      this.oscillators.push(osc);
+      this.gainNodes.push(gain);
+    });
+  }
+
+  // 🔥 Обновление на лету без пересоздания
+  updateOptions(options, realtime = true) {
+    const oldCount = this.options.harmonics.length;
+    const newCount = options.harmonics?.length || 0;
+
+    this.options = { ...this.options, ...options };
+
+    if (this.isActive && realtime) {
+      // Обновляем существующие узлы
+      const count = Math.min(oldCount, newCount);
+      for (let i = 0; i < count; i++) {
+        const h = options.harmonics[i];
+        this.oscillators[i].type = h.type;
+        this.oscillators[i].frequency.setTargetAtTime(
+          h.frequency,
+          this.audioContext.currentTime,
+          0.05
+        );
+        this.gainNodes[i].gain.setTargetAtTime(
+          h.amplitude,
+          this.audioContext.currentTime,
+          0.05
+        );
+      }
+
+      // Добавляем новые
+      for (let i = oldCount; i < newCount; i++) {
+        const h = options.harmonics[i];
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        osc.type = h.type;
+        osc.frequency.value = h.frequency;
+        gain.gain.value = h.amplitude;
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        this.oscillators.push(osc);
+        this.gainNodes.push(gain);
+      }
+
+      // Удаляем лишние
+      for (let i = newCount; i < oldCount; i++) {
+        try {
+          this.oscillators[i].stop();
+          this.oscillators[i].disconnect();
+          this.gainNodes[i].disconnect();
+        } catch(e) {}
+      }
+      this.oscillators = this.oscillators.slice(0, newCount);
+      this.gainNodes = this.gainNodes.slice(0, newCount);
     }
 
-    /**
-     * Запускает непрерывную генерацию.
-     * @param {Function} callback - Функция, которая будет вызываться с каждым сгенерированным AudioBuffer.
-     * @param {Object} options - Параметры генерации (переопределяют дефолтные на время работы).
-     */
-    start(callback, options = {}) {
-        if (this.isGenerating) return;
-        this.isGenerating = true;
-        this.chunkIndex = 0;
-        this.callback = callback;
-        // Запоминаем опции для всех последующих чанков
-        this.options = { ...this.defaultOptions, ...options };
-        this._generateNextChunk();
-    }
+    this.emit('optionsUpdated', this.options);
+  }
 
-    /**
-     * Останавливает генерацию.
-     */
-    stop() {
-        this.isGenerating = false;
-        this.callback = null;
-    }
+  removeHarmonic(index) {
+    if (index <= 0 || index >= this.options.harmonics.length) return;
+    this.options.harmonics.splice(index, 1);
+    this.updateOptions({ harmonics: this.options.harmonics });
+  }
 
-    /**
-     * Генерирует следующий чанк и планирует следующий.
-     * @private
-     */
-    _generateNextChunk() {
-        if (!this.isGenerating) return;
+  getOutput() {
+    return this.masterGain;
+  }
 
-        const {
-            chunkDuration,
-            type,
-            frequency,
-            amplitude,
-            pan,
-            sampleRate,
-            channels,
-            harmonics,
-            filter,
-            fm
-        } = this.options;
+  getState() {
+    return { isActive: this.isActive, options: this.options };
+  }
 
-        // Вычисляем время начала этого чанка в общем потоке (для возможной синхронизации)
-        const startTime = this.chunkIndex * chunkDuration;
-        this.chunkIndex++;
+  getCurrentConfig() {
+    return {
+      name: this.options.name,
+      timestamp: Date.now(),
+      type: 'generator',
+      options: JSON.parse(JSON.stringify(this.options))
+    };
+  }
 
-        // Создаём offline контекст для этого чанка
-        const length = Math.ceil(chunkDuration * sampleRate);
-        const offlineCtx = new OfflineAudioContext(channels, length, sampleRate);
-
-        // Генерация чанка (аналогично run(), но с учётом startTime для непрерывности фазы)
-        // Для осцилляторов нужно сохранять фазу между чанками, чтобы не было щелчков.
-        // Простейший способ — генерировать сигнал вручную, заполняя буфер, с учётом фазы.
-        // Но для упрощения используем осцилляторы, но тогда они будут начинаться с нулевой фазы на каждом чанке, что вызовет щелчки.
-        // Чтобы избежать щелчков, нужно синтезировать сигнал через AudioProcessingEvent? Устарело.
-        // Лучше использовать ScriptProcessorNode (устарел) или AudioWorklet (сложно).
-        // Для демонстрации оставим с осцилляторами, но это не идеально.
-        // Можно генерировать чанки с перекрытием и плавным скрещиванием, но это сложно.
-        // Для целей анализа, возможно, щелчки не критичны.
-        // В реальном проекте лучше использовать AudioWorklet для непрерывной генерации.
-
-        // Упрощённо: создаём осцилляторы на каждый чанк, но они будут сбрасывать фазу.
-        const oscillators = [];
-
-        // Основной осциллятор
-        const mainOsc = offlineCtx.createOscillator();
-        mainOsc.type = type;
-        mainOsc.frequency.value = frequency;
-        oscillators.push(mainOsc);
-
-        const mainGain = offlineCtx.createGain();
-        mainGain.gain.value = amplitude;
-
-        mainOsc.connect(mainGain);
-
-        // FM модуляция
-        if (fm && fm.modFrequency && fm.modDepth) {
-            const modOsc = offlineCtx.createOscillator();
-            modOsc.frequency.value = fm.modFrequency;
-            const modGain = offlineCtx.createGain();
-            modGain.gain.value = fm.modDepth * frequency;
-            modOsc.connect(modGain);
-            modGain.connect(mainOsc.frequency);
-            oscillators.push(modOsc);
-        }
-
-        // Гармоники
-        const masterGain = offlineCtx.createGain();
-        masterGain.gain.value = 1;
-        mainGain.connect(masterGain);
-
-        harmonics.forEach(harm => {
-            const harmOsc = offlineCtx.createOscillator();
-            harmOsc.type = type;
-            harmOsc.frequency.value = harm.frequency;
-            oscillators.push(harmOsc);
-
-            const harmGain = offlineCtx.createGain();
-            harmGain.gain.value = amplitude * harm.amplitude;
-            harmOsc.connect(harmGain);
-            harmGain.connect(masterGain);
-        });
-
-        // Фильтр
-        let finalNode = masterGain;
-        if (filter) {
-            const biquad = offlineCtx.createBiquadFilter();
-            biquad.type = filter.type || 'lowpass';
-            biquad.frequency.value = filter.frequency || 1000;
-            biquad.Q.value = filter.Q || 1;
-            masterGain.connect(biquad);
-            finalNode = biquad;
-        }
-
-        // Панорама
-        if (channels === 2 && pan !== 0) {
-            const panner = offlineCtx.createStereoPanner();
-            panner.pan.value = pan;
-            finalNode.connect(panner);
-            finalNode = panner;
-        }
-
-        finalNode.connect(offlineCtx.destination);
-
-        // Запускаем все осцилляторы
-        oscillators.forEach(osc => {
-            osc.start(0);
-            osc.stop(chunkDuration);
-        });
-
-        // Рендерим чанк
-        offlineCtx.startRendering().then(buffer => {
-            if (this.isGenerating && this.callback) {
-                this.callback(buffer);
-                // Планируем следующий чанк с учётом длительности (чтобы реальное время совпадало)
-                setTimeout(() => this._generateNextChunk(), chunkDuration * 1000 * 0.9); // небольшая задержка для компенсации времени рендеринга
-            }
-        });
-    }
+  setName(name) {
+    this.options.name = name;
+    this.emit('nameChanged', name);
+  }
 }
+
+window.Generator = Generator;

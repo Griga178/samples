@@ -7,20 +7,22 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+
   <div class="container">
-    <h1>🎵 Система Тренировки Голоса</h1>
 
-    <!-- Блок 1: Настройка Generator -->
-  <div id="generator-block" class="generator-block">
-    <h3>🎹 Генератор Звука</h3>
+    <h1>🎵 Голос</h1>
 
-    <!-- Основные настройки -->
-    <div class="gen-settings">
-      <div class="gen-row">
-        <label>Частота (Hz):
-          <input type="number" id="gen-frequency" value="440" min="20" max="20000">
-        </label>
-        <label>Тип волны:
+    <!-- Generator Block -->
+    <div id="generator-block" class="block">
+      <h3>🎹 Генератор</h3>
+
+      <div class="gen-header">
+        <input type="text" id="gen-name" placeholder="Название" class="gen-name">
+        <button id="reset-generator">🔄 Сброс</button>
+      </div>
+
+      <div class="gen-main">
+        <label>Тип:
           <select id="gen-waveform">
             <option value="sine">Sine</option>
             <option value="square">Square</option>
@@ -28,69 +30,76 @@
             <option value="triangle">Triangle</option>
           </select>
         </label>
+        <label>Частота (Hz):
+          <input type="number" id="gen-frequency" value="440" min="20" max="20000">
+        </label>
         <label>Амплитуда:
-          <input type="range" id="gen-amplitude" min="0" max="1" step="0.1" value="0.5">
+          <input type="range" id="gen-amplitude" min="0" max="1" step="0.05" value="0.5">
           <span id="gen-amplitude-value">0.5</span>
         </label>
-      </div>
+        <button id="add-harmonic">+ Гармоника</button></div>
 
-      <!-- Дополнительные гармоники -->
-      <div class="harmonics-section">
-        <h4>Гармоники</h4>
-        <div id="harmonics-list"></div>
-        <button id="add-harmonic" class="btn-secondary">+ Добавить гармонику</button>
-      </div>
 
-      <button id="apply-generator" class="btn-primary">Применить настройки</button>
+      <div id="harmonics-list">
+
+      <div class="gen-buttons">
+
+        <button id="apply-generator">Применить</button>
+        <button id="save-preset">💾 Сохранить</button>
+        <button id="toggle-generator" data-state="off">🔘 <span class="status">OFF</span></button>
+      </div>
+    </div>
     </div>
 
-    <!-- Управление генератором -->
-    <div class="gen-controls">
-      <button id="toggle-generator" data-state="off" class="btn-toggle">
-        🎹 Генератор: <span class="status">OFF</span>
-      </button>
+    <!-- GeneratorPresets Block -->
+    <div id="presets-block" class="block">
+      <h3>💾 Пресеты</h3>
+      <div class="presets-actions">
+        <button id="export-presets">📤 Экспорт</button>
+        <label class="btn">
+          📥 Импорт
+          <input type="file" id="import-preset" accept=".json" style="display:none">
+        </label>
+      </div>
+      <div id="presets-list"></div>
     </div>
 
-    <!-- Пресеты -->
-<div class="presets-section">
-  <h4>💾 Сохранённые пресеты</h4>
-
-  <div class="presets-actions">
-    <input type="text" id="preset-name" placeholder="Название пресета">
-    <button id="save-preset" class="btn-secondary">💾 Сохранить</button>
-    <label class="btn-secondary" title="Импорт пресета">
-      📁 Импорт
-      <input type="file" id="import-preset" accept=".json" style="display:none">
-    </label>
-  </div>
-
-  <div id="presets-list" class="presets-list"></div>
-</div>
-
-    <!-- Блок 2: Управление -->
-    <section class="block" id="controls-block">
-      <h2>🎛️ Управление</h2>
-      <div class="toggle-buttons">
-        <!-- <button id="toggle-generator" class="toggle-btn" data-state="off">
-          🎹 Генератор <span class="status">OFF</span>
-        </button> -->
-        <button id="toggle-microphone" class="toggle-btn" data-state="off">
-          🎤 Микрофон <span class="status">OFF</span>
-        </button>
-        <button id="toggle-player" class="toggle-btn" data-state="off">
-          🔊 Плеер <span class="status">OFF</span>
-        </button>
-        <button id="toggle-recorder" class="toggle-btn" data-state="off">
-          ⏺️ Запись <span class="status">OFF</span>
-        </button>
+    <!-- SoundTrack Block -->
+    <div id="track-block" class="block">
+      <h3>🎵 Звуковая Дорожка</h3>
+      <div class="track-controls">
+        <select id="track-preset-select"></select>
+        <input type="number" id="track-duration" value="1.0" step="0.1" min="0.1" max="30">
+        <input type="range" id="track-amplitude" min="0" max="1" step="0.1" value="0.5">
+        <button id="add-track-element">+ Добавить</button>
       </div>
-      <div id="init-message" class="message">Нажмите любую кнопку для инициализации аудио</div>
-    </section>
+      <div id="track-list"></div>
+      <div class="track-buttons">
+        <button id="play-track">▶ Play</button>
+        <button id="stop-track">⏹ Stop</button>
+        <button id="save-track">💾 Сохранить</button>
+        <span id="track-duration-total">0.0s</span>
+      </div>
+    </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- Блок Анализа -->
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <div id="analyzer-block" class="analyzer-block">
+    <!-- Microphone Block -->
+    <div id="microphone-block" class="block">
+      <h3>🎤 Микрофон</h3>
+      <div class="mic-controls">
+        <button id="toggle-microphone" data-state="off">🔘 <span class="status">OFF</span></button>
+        <button id="toggle-recorder" data-state="off">🔴 <span class="status">OFF</span></button>
+        <button id="capture-voice">🎤 Поймать</button>
+      </div>
+      <div class="mic-filters">
+        <label>Lowpass: <input type="range" id="mic-lowpass" min="80" max="8000" value="8000"><span id="mic-lowpass-value">8000</span></label>
+        <label>Highpass: <input type="range" id="mic-highpass" min="20" max="500" value="60"><span id="mic-highpass-value">60</span></label>
+        <label>Noise Gate: <input type="range" id="mic-noise-gate" min="-60" max="0" value="-42"><span id="mic-noise-gate-value">-42</span></label>
+        <label>Compressor: <input type="range" id="mic-compressor-threshold" min="-40" max="0" value="-20"><span id="mic-compressor-threshold-value">-20</span></label>
+      </div>
+    </div>
+
+    <!-- Analyzer Block -->
+    <div id="analyzer-block" class="block analyzer-block">
       <h3>📊 Анализ Звука</h3>
 
       <!-- Основные показатели -->
@@ -138,33 +147,6 @@
       </div>
     </div>
 
-    <!-- Блок 4: Микрофон Фильтры -->
-    <section class="block" id="mic-filters-block">
-      <h2>🎚️ Фильтры Микрофона</h2>
-      <div class="filters-controls">
-        <div class="control-group">
-          <label>ФНЧ (Hz):</label>
-          <input type="range" id="mic-lowpass" min="100" max="20000" value="8000">
-          <span id="mic-lowpass-value">8000</span>
-        </div>
-        <div class="control-group">
-          <label>ФВЧ (Hz):</label>
-          <input type="range" id="mic-highpass" min="20" max="1000" value="60">
-          <span id="mic-highpass-value">60</span>
-        </div>
-        <div class="control-group">
-          <label>Noise Gate (dB):</label>
-          <input type="range" id="mic-noise-gate" min="-60" max="0" value="-42">
-          <span id="mic-noise-gate-value">-42</span>
-        </div>
-        <div class="control-group">
-          <label>Compressor Threshold (dB):</label>
-          <input type="range" id="mic-compressor-threshold" min="-60" max="0" value="-20">
-          <span id="mic-compressor-threshold-value">-20</span>
-        </div>
-      </div>
-    </section>
-
     <!-- Блок 5: Storage -->
     <section class="block" id="storage-block">
       <h2>💾 Хранилище</h2>
@@ -185,20 +167,36 @@
 
   <!-- Скрипты -->
   <script src="js/config.js"></script>
-  <script src="js/utils/EventEmitter.js"></script>
-  <script src="js/utils/WAVExporter.js"></script>
-  <script src="js/utils/PitchDetection.js"></script>
-  <script src="js/classes/GeneratorPresets.js"></script>
-  <script src="js/classes/Generator.js"></script>
-  <script src="js/classes/Microphone.js"></script>
-  <script src="js/classes/Analyzer.js"></script>
-  <script src="js/classes/Player.js"></script>
-  <script src="js/classes/Recorder.js"></script>
-  <script src="js/classes/Storage.js"></script>
-  <script src="js/classes/AudioComparator.js"></script>
-  <script src="js/classes/AudioCatcher.js"></script>
-  <script src="js/main.js"></script>
+  <!-- coreParent -->
+  <script src="js/core/EventEmitter.js"></script>
+  <!-- core -->
+  <script src="js/core/Generator.js"></script>
+  <script src="js/core/Microphone.js"></script>
+  <script src="js/core/Analyzer.js"></script>
+  <!-- ? temp to delete -->
+  <script src="js/core/AudioCatcher.js"></script>
+  <script src="js/core/Player.js"></script>
+  <script src="js/core/Storage.js"></script>
+  <script src="js/core/Recorder.js"></script>
+  <script src="js/core/AudioComparator.js"></script>
+  <!-- features -->
+  <script src="js/features/GeneratorPresets.js"></script>
+  <script src="js/features/SoundTrack.js"></script>
+  <!-- ui-->
+  <script src="js/ui/UIManager.js"></script>
+  <script src="js/ui/GeneratorUI.js"></script>
+  <script src="js/ui/PresetsUI.js"></script>
+  <script src="js/ui/TrackUI.js"></script>
+  <script src="js/ui/MicrophoneUI.js"></script>
+
+  <!-- ? temp to delete-->
+  <!-- <script src="js/utils/WAVExporter.js"></script> -->
+  <!-- <script src="js/utils/PitchDetection.js"></script> -->
+
+  <!-- main app -->
+  <!-- <script src="js/main.js"></script> -->
+  <script src="js/app.js"></script>
+
 </body>
-<audio src="./sounds/1.wav" data-name="Эталон 1"></audio>
-<audio src="./sounds/2.wav" data-name="Эталон 2"></audio>
+
 </html>

@@ -82,6 +82,45 @@ class Analyzer extends EventEmitter {
     }
   }
 
+  captureVoice() {
+    return new Promise((resolve) => {
+      this.analyser.getByteFrequencyData(this.dataArray);
+
+      const harmonics = this._extractTopHarmonics(10);
+
+      const config = {
+        name: `voice_${Date.now().toString(36)}`,
+        harmonics: harmonics.map(h => ({
+          type: 'sine',
+          frequency: h.frequency,
+          amplitude: h.amplitude
+        }))
+      };
+
+      resolve(config);
+    });
+  }
+
+  _extractTopHarmonics(count = 10) {
+    const sampleRate = this.audioContext.sampleRate;
+    const binSize = sampleRate / this.analyser.fftSize;
+    const harmonics = [];
+
+    for (let i = 1; i < this.bufferLength; i++) {
+      const amplitude = this.dataArray[i] / 255;
+      if (amplitude > 0.1) {
+        harmonics.push({
+          frequency: i * binSize,
+          amplitude,
+          bin: i
+        });
+      }
+    }
+
+    harmonics.sort((a, b) => b.amplitude - a.amplitude);
+    return harmonics.slice(0, count);
+  }
+
   _detectHarmonics(spectrum, fundamentalPitch) {
     const harmonics = [];
     if (!fundamentalPitch || fundamentalPitch < this.harmonicsConfig.minFrequency) {

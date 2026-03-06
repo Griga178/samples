@@ -72,6 +72,17 @@ class Generator extends EventEmitter {
       options: JSON.parse(JSON.stringify(this.options))
     };
   }
+
+  setName(name) {
+    this.options.name = name;
+    this.emit('nameChanged', name);
+  }
+
+  removeHarmonic(index) {
+    if (index <= 0 || index >= this.options.harmonics.length) return;
+    this.options.harmonics.splice(index, 1);
+    this.updateOptions({ harmonics: this.options.harmonics });
+  }
 }
 
 window.Generator = Generator;
