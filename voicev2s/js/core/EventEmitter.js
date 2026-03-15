@@ -1,4 +1,4 @@
-// EventEmitter для связи между классами
+// 📄 js/core/EventEmitter.js  для связи между классами
 class EventEmitter {
   constructor() {
     this.events = {};

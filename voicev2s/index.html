@@ -17,8 +17,12 @@
       <h3>🎹 Генератор</h3>
 
       <div class="gen-header">
-        <input type="text" id="gen-name" placeholder="Название" class="gen-name">
+        <input type="text" id="presetName" placeholder="Название" class="gen-name">
+        <button id="setNameBtn">Установить имя</button>
         <button id="reset-generator">🔄 Сброс</button>
+        <button class="btn" id="toggleBtn">▶️ Старт</button>
+        <span class="status" id="status">⚪ Остановлен</span>
+        <span class="status" id="nameDisplay">Имя: —</span>
       </div>
 
       <div class="gen-main">
@@ -37,10 +41,11 @@
           <input type="range" id="gen-amplitude" min="0" max="1" step="0.05" value="0.5">
           <span id="gen-amplitude-value">0.5</span>
         </label>
-        <button id="add-harmonic">+ Гармоника</button></div>
+        <button class="addHarmonicBtn"id="addHarmonicBtn">+ Гармоника</button>
+      </div>
 
 
-      <div id="harmonics-list">
+      <div class="harmonicsList" id="harmonicsList">
 
       <div class="gen-buttons">
 
@@ -191,7 +196,7 @@
 
   <!-- ? temp to delete-->
   <!-- <script src="js/utils/WAVExporter.js"></script> -->
-  <!-- <script src="js/utils/PitchDetection.js"></script> -->
+  <script src="js/utils/PitchDetection.js"></script>
 
   <!-- main app -->
   <!-- <script src="js/main.js"></script> -->

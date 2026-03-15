@@ -1,0 +1,110 @@
+/* --- LAYOUTS --- */
+.main-content--sequence {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sequence-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    height: 350px;
+}
+
+.matching-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 20px;
+    flex-grow: 1;
+}
+
+/* --- TIMELINE --- */
+.timeline {
+    background: var(--shadow-inner);
+    border-radius: 15px;
+    padding: 20px;
+    position: relative;
+    overflow-x: auto;
+}
+
+.timeline__ruler {
+    display: flex;
+    justify-content: space-between;
+    color: #999;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.timeline__track {
+    height: 80px;
+    background: rgba(255,255,255,0.3);
+    border: 2px dashed #bcccdc;
+    border-radius: 10px;
+    display: flex; /* Только последовательно! */
+    align-items: center;
+    padding: 5px;
+    gap: 2px;
+}
+
+.timeline-block {
+    height: 60px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    cursor: grab;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.t-voice { background: var(--accent-orange); }
+.t-synth { background: var(--accent-blue); }
+.t-pause { background: #babecc; color: #666; }
+
+/* --- MATCHING DISPLAY --- */
+.match-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.match-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 10px solid var(--accent-blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-light);
+}
+
+.match-value { font-size: 2rem; font-weight: 800; }
+
+.status--active {
+    color: #2ecc71;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+/* --- HISTORY TABLE --- */
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th { text-align: left; padding: 10px; border-bottom: 2px solid #ddd; }
+.history-table td { padding: 10px; border-bottom: 1px solid #eee; }
+.history-table tr.highlight { background: rgba(46, 204, 113, 0.1); }
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}

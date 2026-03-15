@@ -1,0 +1,112 @@
+/* Стили только для первого .harmonic-item внутри .harmonics */
+.harmonics .harmonic-item:first-child {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border: 2px solid var(--accent-blue); /* Акцент на главной волне */
+  /* box-shadow: var(--shadow-light); */
+}
+
+.harmonics .harmonic-item:first-child button {
+  display: none;
+}
+/* Harmonic block*/
+.harmonic-item {
+    display: flex; /* Делим на контент и кнопку удаления */
+    background: white;
+    border-radius: 15px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-light);
+    overflow: hidden; /* Чтобы скругления обрезали кнопку удаления */
+    min-height: 120px;
+    transition: transform 0.1s;
+}
+
+.harmonic-item__content {
+    flex-grow: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Строки с ползунками */
+.harmonic-row {
+    display: grid;
+    grid-template-columns: 80px 1fr; /* Фиксированная ширина для зоны лейблов */
+    align-items: center;
+    gap: 10px;
+}
+
+/* Строка: Номер + Селект */
+.harmonic-row--header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+.harmonic-number {
+    font-weight: 800;
+    color: var(--accent-blue);
+    min-width: 40px;
+}
+
+.input-select-type {
+    flex-grow: 1;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #dfe6e9;
+    background: var(--bg-color);
+    font-weight: 600;
+}
+
+.label-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.label-group label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: #b2bec3;
+    font-weight: 700;
+}
+
+/* Стилизация ползунка */
+.input-range-styled {
+    width: 100%;
+    cursor: pointer;
+}
+
+/* Кнопка удаления на всю высоту */
+.btn-delete-full {
+    width: 50px;
+    background: #ffeaa7; /* Теплый цвет или нежно-красный #fab1a0 */
+    border: none;
+    border-left: 1px solid rgba(0,0,0,0.05);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.btn-delete-full span {
+    font-size: 1.8rem;
+    color: #d63031;
+    font-weight: 300;
+}
+
+.btn-delete-full:hover {
+    background: #ff7675;
+}
+
+.btn-delete-full:hover span {
+    color: white;
+}
+.btn:active { box-shadow: var(--shadow-inner); transform: scale(0.98); }
+
+.input-select, .input-range { width: 100%; margin: 10px 0; }
+
+.scrollbar::-webkit-scrollbar { width: 6px; }
+.scrollbar::-webkit-scrollbar-thumb { background: #bcccdc; border-radius: 10px; }

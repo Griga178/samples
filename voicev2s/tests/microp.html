@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harmonics Analyzer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .header h3 { display: flex; align-items: center; gap: 8px; }
+
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #74b9ff;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #5a9fd6; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .btn.active { background: #0984e3; }
+    .btn.danger { background: #ff7675; }
+    .btn.danger:hover { background: #d63031; }
+
+    .status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      background: #eee;
+      color: #666;
+    }
+    .status.on { background: #2ecc71; color: white; }
+
+    canvas {
+      width: 100%;
+      height: 200px;
+      border-radius: 8px;
+      display: block;
+      margin: 15px 0;
+      background: #2d3436;
+    }
+
+    .harmonics-list {
+      max-height: 180px;
+      overflow-y: auto;
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+    }
+    .h-item {
+      display: flex;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+      align-items: center;
+    }
+    .h-item:last-child { border-bottom: none; }
+    .h-item strong { flex: 1; font-weight: 600; }
+    .h-item span:last-child { color: #888; min-width: 55px; text-align: right; font-size: 0.9em; }
+    .h-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+    .error {
+      color: #d63031;
+      background: #ffeaea;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      display: none;
+    }
+    .error.show { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h3>🎼 Harmonics Analyzer</h3>
+      <div class="controls">
+        <button class="btn" id="micBtn">🎤 Включить микрофон</button>
+        <button class="btn" id="analyzerBtn" disabled>▶ Анализ</button>
+        <span class="status" id="micStatus">Выкл</span>
+      </div>
+    </div>
+
+    <div class="error" id="errorMsg"></div>
+
+    <canvas id="harmonicsCanvas"></canvas>
+
+    <div class="harmonics-list" id="harmonicsList">—</div>
+  </div>
+
+  <script src="../js/core/Analyzer.js"></script>
+  <script src="../js/core/Microphone.js"></script>
+  <script src="AnalyzerUI.js"></script>
+
+
+  <script>
+    (function() {
+      // DOM элементы
+      const micBtn = document.getElementById('micBtn');
+      const analyzerBtn = document.getElementById('analyzerBtn');
+      const micStatus = document.getElementById('micStatus');
+      const errorMsg = document.getElementById('errorMsg');
+
+      // Состояние
+      let audioCtx = null;
+      let analyzer = null;
+      let microphone = null;
+      let ui = null;
+      let micSource = null;
+      let micStream = null;
+      let isMicOn = false;
+      let isAnalyzing = false;
+      let animationId = null;
+
+      // Показать ошибку
+      function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.add('show');
+        setTimeout(() => errorMsg.classList.remove('show'), 4000);
+      }
+
+      // Инициализация аудио-контекста (только после клика)
+      async function initAudioContext() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          analyzer = new Analyzer(audioCtx);
+          microphone = new Microphone(audioCtx);
+
+          ui = new AnalyzerUI(analyzer, 'harmonicsCanvas', 'harmonicsList');
+        }
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+        }
+      }
+
+      // Вкл/Выкл микрофон
+      async function toggleMic() {
+        if (isMicOn) {
+          // Выключение
+          microphone.disable();
+
+          if (isAnalyzing) toggleAnalyzer(); // Остановить анализ если был включен
+
+          isMicOn = false;
+          micBtn.textContent = '🎤 Включить микрофон';
+          micBtn.classList.remove('active', 'danger');
+          micStatus.textContent = 'Выкл';
+          micStatus.classList.remove('on');
+          analyzerBtn.disabled = true;
+          ui?.clear();
+        } else {
+          // Включение
+          try {
+            await initAudioContext();
+            const source = await microphone.enable();
+            source.connect(analyzer.analyser);
+
+            isMicOn = true;
+            micBtn.textContent = '🎤 Выключить микрофон';
+            micBtn.classList.add('active');
+            micStatus.textContent = 'Вкл';
+            micStatus.classList.add('on');
+            analyzerBtn.disabled = false;
+            
+            toggleAnalyzer();
+          } catch (err) {
+            console.error('Mic error:', err);
+            showError('Ошибка доступа к микрофону: ' + (err.message || err));
+          }
+        }
+      }
+
+      // Вкл/Выкл анализ
+      function toggleAnalyzer() {
+        if (isAnalyzing) {
+          // Остановка
+          analyzer.stop();
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+          }
+          isAnalyzing = false;
+          analyzerBtn.textContent = '▶ Анализ';
+          analyzerBtn.classList.remove('active');
+          ui?.clear();
+        } else {
+          // Запуск
+          if (!isMicOn) {
+            showError('Сначала включите микрофон');
+            return;
+          }
+          analyzer.start();
+          isAnalyzing = true;
+          analyzerBtn.textContent = '⏹ Стоп';
+          analyzerBtn.classList.add('active');
+          _renderLoop();
+        }
+      }
+
+      // Цикл отрисовки
+      function _renderLoop() {
+        if (!isAnalyzing || !analyzer.isRunning) return;
+        const harmonics = analyzer.getHarmonics();
+        ui.render(harmonics);
+        animationId = requestAnimationFrame(_renderLoop);
+      }
+
+      // Обработчики кнопок
+      micBtn.addEventListener('click', toggleMic);
+      analyzerBtn.addEventListener('click', toggleAnalyzer);
+
+      // Очистка при выгрузке страницы
+      window.addEventListener('beforeunload', () => {
+        if (micStream) micStream.getTracks().forEach(t => t.stop());
+        if (animationId) cancelAnimationFrame(animationId);
+        if (audioCtx) audioCtx.close();
+      });
+
+      // Инфо в консоль
+      console.log('🎼 Harmonics Analyzer ready. Click mic button to start.');
+    })();
+  </script>
+</body>
+</html>

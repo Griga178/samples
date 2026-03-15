@@ -1,63 +1,140 @@
-// Алгоритмы определения высоты тона
+/**
+ * @class PitchDetection
+ * @description Набор алгоритмов для определения основной частоты (pitch) аудиосигнала.
+ *
+ * @example
+ * // Определение частоты из временного буфера
+ * const float32Array = analyzer.timeDataArray; // [-1, 1], длина 2048-4096
+ * const sampleRate = audioContext.sampleRate;  // обычно 44100 или 48000
+ *
+ * const pitchYIN = PitchDetection.yin(float32Array, sampleRate, 0.1);
+ *
+ * if (pitchYIN > 0) {
+ *   console.log(`Частота: ${Math.round(pitchYIN)} Hz`);
+ * }
+ *
+ */
 class PitchDetection {
-  // YIN Algorithm
+
+  /**
+   * @method yin
+   * @static
+   * @param {Float32Array} float32Array - Временной сигнал в диапазоне [-1, 1]
+   * @param {number} sampleRate - Частота дискретизации (Гц), обычно 44100
+   * @param {number} [threshold=0.1] - Порог уверенности (0.01-0.2), меньше = строже
+   * @returns {number} Частота в Гц или -1 если не определена
+   *
+   * @description Алгоритм YIN для точного определения основной частоты.
+   *              Оптимален для монофонических сигналов (голос, один инструмент).
+   *              Сложность: O(n²), рекомендуется bufferSize 2048-4096.
+   *
+   * @throws {TypeError} Если float32Array не является массивом чисел
+   *
+   * @example
+   * const pitch = PitchDetection.yin(
+   *   analyzer.timeDataArray,
+   *   audioContext.sampleRate,
+   *   0.15 // чуть мягче порог для шумной среды
+   * );
+   */
   static yin(float32Array, sampleRate, threshold = 0.1) {
+    // Валидация входных данных
+    if (!float32Array || float32Array.length < 256) {
+      return -1;
+    }
+
     const bufferSize = float32Array.length;
     const maxPeriod = Math.floor(bufferSize / 2);
-    const minPeriod = 8;
+    const minPeriod = 8; // ~5.5кГц при 44.1кГц — верхний предел для голоса
 
-    const yinBuffer = new Float32Array(maxPeriod);
-    const differenceFunction = this.differenceFunction(float32Array, bufferSize, maxPeriod);
+    // Проверка на тишину (оптимизация: не считаем если сигнал слабый)
+    let signalPower = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      signalPower += float32Array[i] * float32Array[i];
+    }
+    if (signalPower / bufferSize < 0.0001) {
+      return -1; // Слишком тихо для детектирования
+    }
 
-    let cumulativeMeanNormalizedDifference = this.cumulativeMeanNormalizedDifference(
-      differenceFunction,
-      maxPeriod
-    );
+    const differenceFunction = this._differenceFunction(float32Array, bufferSize, maxPeriod);
+    const cmnd = this._cumulativeMeanNormalizedDifference(differenceFunction, maxPeriod);
 
+    // Поиск первого минимума ниже порога
     let pitchPeriod = -1;
-    for (let i = minPeriod; i < maxPeriod; i++) {
-      if (cumulativeMeanNormalizedDifference[i] < threshold) {
-        pitchPeriod = i;
+    for (let tau = minPeriod; tau < maxPeriod; tau++) {
+      if (cmnd[tau] < threshold) {
+        pitchPeriod = tau;
         break;
       }
     }
 
+    // Если не нашли — интерполяция лучшего минимума
     if (pitchPeriod === -1) {
-      // Parabolic interpolation for better accuracy
-      pitchPeriod = this.parabolicInterpolation(cumulativeMeanNormalizedDifference, minPeriod, maxPeriod);
+      pitchPeriod = this._parabolicInterpolation(cmnd, minPeriod, maxPeriod);
     }
 
     return pitchPeriod > 0 ? sampleRate / pitchPeriod : -1;
   }
 
-  static differenceFunction(float32Array, bufferSize, maxPeriod) {
+  /**
+   * @method _differenceFunction
+   * @private
+   * @static
+   * @param {Float32Array} float32Array
+   * @param {number} bufferSize
+   * @param {number} maxPeriod
+   * @returns {Float32Array} Массив разностей для каждого лага
+   */
+  static _differenceFunction(float32Array, bufferSize, maxPeriod) {
     const difference = new Float32Array(maxPeriod);
+
     for (let tau = 0; tau < maxPeriod; tau++) {
-      difference[tau] = 0;
+      let sum = 0;
+      // Оптимизация: локальная переменная для ускорения доступа
       for (let i = 0; i < bufferSize - tau; i++) {
         const delta = float32Array[i] - float32Array[i + tau];
-        difference[tau] += delta * delta;
+        sum += delta * delta;
       }
+      difference[tau] = sum;
     }
     return difference;
   }
 
-  static cumulativeMeanNormalizedDifference(differenceFunction, maxPeriod) {
+  /**
+   * @method _cumulativeMeanNormalizedDifference
+   * @private
+   * @static
+   * @param {Float32Array} differenceFunction
+   * @param {number} maxPeriod
+   * @returns {Float32Array} Нормализованная кумулятивная разность
+   */
+  static _cumulativeMeanNormalizedDifference(differenceFunction, maxPeriod) {
     const cmnd = new Float32Array(maxPeriod);
     cmnd[0] = 1;
     let runningSum = 0;
 
     for (let tau = 1; tau < maxPeriod; tau++) {
       runningSum += differenceFunction[tau];
-      cmnd[tau] = differenceFunction[tau] * tau / runningSum;
+      // Защита от деления на ноль
+      cmnd[tau] = runningSum === 0 ? 0 : (differenceFunction[tau] * tau) / runningSum;
     }
     return cmnd;
   }
 
-  static parabolicInterpolation(array, minPeriod, maxPeriod) {
+  /**
+   * @method _parabolicInterpolation
+   * @private
+   * @static
+   * @param {Float32Array} array
+   * @param {number} minPeriod
+   * @param {number} maxPeriod
+   * @returns {number} Уточнённый период с суб-сэмпл точностью
+   */
+  static _parabolicInterpolation(array, minPeriod, maxPeriod) {
     let bestIndex = minPeriod;
     let minValue = array[minPeriod];
 
+    // Поиск глобального минимума в диапазоне
     for (let i = minPeriod + 1; i < maxPeriod; i++) {
       if (array[i] < minValue) {
         minValue = array[i];
@@ -65,62 +142,25 @@ class PitchDetection {
       }
     }
 
+    // Параболическая интерполяция для суб-сэмпл точности
     if (bestIndex > minPeriod && bestIndex < maxPeriod - 1) {
       const a = array[bestIndex - 1];
       const b = array[bestIndex];
       const c = array[bestIndex + 1];
-      const correction = (a - c) / (2 * (a - 2 * b + c));
-      return bestIndex + correction;
+      const denominator = 2 * (a - 2 * b + c);
+
+      // Защита от деления на ноль (плоский минимум)
+      if (Math.abs(denominator) > 0.0001) {
+        const correction = (a - c) / denominator;
+        return bestIndex + correction;
+      }
     }
 
     return bestIndex;
   }
 
-  // Autocorrelation
-  static autocorrelation(float32Array, sampleRate) {
-    const bufferSize = float32Array.length;
-    const maxPeriod = Math.floor(bufferSize / 2);
-    const minPeriod = 8;
-
-    let bestOffset = -1;
-    let bestCorrelation = 0;
-    let foundGoodCorrelation = false;
-    const correlations = new Array(maxPeriod).fill(0);
-
-    for (let offset = minPeriod; offset < maxPeriod; offset++) {
-      let correlation = 0;
-      for (let i = 0; i < bufferSize - offset; i++) {
-        correlation += float32Array[i] * float32Array[i + offset];
-      }
-      correlations[offset] = correlation;
-
-      if (correlation > bestCorrelation) {
-        bestCorrelation = correlation;
-        bestOffset = offset;
-        foundGoodCorrelation = true;
-      }
-    }
-
-    if (foundGoodCorrelation && bestOffset > 0) {
-      // Parabolic interpolation
-      const shift = (correlations[bestOffset - 1] - correlations[bestOffset + 1]) /
-                    (2 * (correlations[bestOffset - 1] - 2 * correlations[bestOffset] + correlations[bestOffset + 1]));
-      return sampleRate / (bestOffset + shift);
-    }
-
-    return -1;
-  }
-
-  // Convert Hz to cents
-  static hzToCents(hz1, hz2) {
-    if (hz1 <= 0 || hz2 <= 0) return 0;
-    return 1200 * Math.log2(hz2 / hz1);
-  }
-
-  // Convert cents to Hz
-  static centsToHz(hz, cents) {
-    return hz * Math.pow(2, cents / 1200);
-  }
 }
+
+
 
 window.PitchDetection = PitchDetection;

@@ -4,15 +4,25 @@ class Generator extends EventEmitter {
     this.audioContext = audioContext;
     this.oscillators = [];
     this.gainNode = null;
+    this.destinationNode = null;
     this.isActive = false;
+    this.isConnectedToDestination = false;
     this.options = {
-      harmonics: [{ type: 'sine', frequency: 220, amplitude: 0.5 }]
+      name: '',
+      harmonics: [
+        { type: 'sine', frequency: 220, amplitude: 0.5 }
+      ]
     };
   }
 
   start() {
     if (this.isActive) return;
     this._createNodes();
+
+    if (this.isConnectedToDestination && this.destinationNode) {
+      this.gainNode.connect(this.destinationNode);
+    }
+
     this.isActive = true;
     this.emit('stateChange', true);
   }
@@ -40,6 +50,50 @@ class Generator extends EventEmitter {
     this.emit('optionsUpdated', this.options);
   }
 
+  connectToDestination() {
+    if (!this.isActive || !this.gainNode) {
+      this.isConnectedToDestination = true;
+      return false;
+    }
+
+    this.destinationNode = this.audioContext.destination;
+    this.gainNode.connect(this.destinationNode);
+    this.isConnectedToDestination = true;
+    this.emit('outputConnected');
+    return true;
+  }
+
+  disconnectFromDestination() {
+    if (!this.isConnectedToDestination || !this.gainNode) {
+      return false;
+    }
+
+    try {
+      this.gainNode.disconnect(this.destinationNode);
+    } catch(e) {}
+
+    this.destinationNode = null;
+    this.isConnectedToDestination = false;
+    this.emit('outputDisconnected');
+    return true;
+  }
+
+  toggleDestination() {
+    if (this.isConnectedToDestination) {
+      this.disconnectFromDestination();
+      return false;
+    } else {
+      this.connectToDestination();
+      return true;
+    }
+  }
+
+  setVolume(volume) {
+    if (this.gainNode) {
+      this.gainNode.gain.value = Math.max(0, Math.min(1, volume));
+    }
+  }
+
   _createNodes() {
     this.gainNode = this.audioContext.createGain();
     this.gainNode.gain.value = 1;
@@ -62,12 +116,16 @@ class Generator extends EventEmitter {
   }
 
   getState() {
-    return { isActive: this.isActive, options: this.options };
+    return {
+      isActive: this.isActive,
+      isConnectedToDestination: this.isConnectedToDestination,
+      options: this.options
+    };
   }
 
   getCurrentConfig() {
     return {
-      name: '',
+      name: this.options.name || '',
       timestamp: Date.now(),
       options: JSON.parse(JSON.stringify(this.options))
     };
@@ -79,8 +137,21 @@ class Generator extends EventEmitter {
   }
 
   removeHarmonic(index) {
-    if (index <= 0 || index >= this.options.harmonics.length) return;
+    if (index < 0 || index >= this.options.harmonics.length) return;
+    if (this.options.harmonics.length <= 1) return;
     this.options.harmonics.splice(index, 1);
+    this.updateOptions({ harmonics: this.options.harmonics });
+  }
+
+  addHarmonic(harmonic) {
+    this.options.harmonics.push(harmonic);
+    this.updateOptions({ harmonics: this.options.harmonics });
+  }
+
+  clearHarmonics(newHarmonic) {
+    this.options.harmonics = newHarmonic ? [newHarmonic] : [
+      { type: 'sine', frequency: 220, amplitude: 0.5 }
+    ];
     this.updateOptions({ harmonics: this.options.harmonics });
   }
 }

@@ -1,0 +1,213 @@
+/* --- ОСНОВНЫЕ ПЕРЕМЕННЫЕ --- */
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg: #e6e9ef;
+    --text-main: #2d3436;
+    --accent-blue: #74b9ff;
+    --accent-orange: #ffab76;
+    --shadow-light: 5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff;
+    --shadow-inner: inset 2px 2px 5px #babecc, inset -5px -5px 10px #ffffff;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    color: var(--text-main);
+    margin: 0;
+    overflow: hidden; /* Фиксируем под 1280x800 */
+}
+
+.app-container {
+    width: 1280px;
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- МОДУЛЬНАЯ СЕТКА --- */
+.main-content {
+    display: grid;
+    grid-template-columns: 350px 1fr 300px;
+    gap: 20px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow-light);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- КНОПКИ --- */
+.btn {
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: var(--shadow-light);
+    transition: all 0.2s;
+}
+
+.btn:active { box-shadow: var(--shadow-inner); }
+.btn--shoot { background-color: var(--accent-orange); color: white; font-size: 1.2rem; }
+.btn--add { background-color: var(--accent-blue); color: white; margin-bottom: 15px; }
+
+/* --- СПЕЦИФИЧНЫЕ БЛОКИ --- */
+.harmonics-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.harmonic-item {
+    background: rgba(255,255,255,0.5);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.input-range {
+    width: 100%;
+    appearance: none;
+    background: transparent;
+}
+
+.input-range::-webkit-slider-runnable-track {
+    background: #ccd1d9;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.viz-box {
+    background: #fff;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    box-shadow: var(--shadow-inner);
+}
+
+.storage-item {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: var(--shadow-light);
+    cursor: pointer;
+}
+
+.scrollbar::-webkit-scrollbar { width: 6px; }
+.scrollbar::-webkit-scrollbar-thumb { background: #bcccdc; border-radius: 10px; }
+
+/* --- ВЫРАВНИВАНИЕ КОНТЕЙНЕРА ПО ЦЕНТРУ --- */
+.app-container {
+    max-width: 1280px; /* Максимальная ширина */
+    min-height: 100vh;
+    margin: 0 auto;    /* Центрирование на странице */
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-color);
+    padding-bottom: 20px;
+}
+
+/* --- СТИЛИ ХЕДЕРА --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: var(--card-bg);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+
+.header__logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Добавим небольшую иконку перед логотипом через псевдоэлемент */
+.header__logo::before {
+    content: '〰️';
+    font-size: 1.2rem;
+    color: var(--accent-blue);
+}
+
+.header__user {
+    background: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-light);
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header__user:hover {
+    transform: translateY(-2px);
+}
+
+.header__user::before {
+    content: '👤';
+}
+
+/* --- АДАПТИВНОСТЬ (Responsive) --- */
+
+/* Планшеты (до 1024px) */
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr 1fr; /* Убираем правую колонку в отдельный ряд позже или сжимаем */
+        padding: 15px;
+    }
+
+    .sidebar {
+        grid-column: span 2; /* Растягиваем сайдбар на всю ширину под основными блоками */
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+}
+
+/* Телефоны (до 768px) */
+@media (max-width: 768px) {
+    .header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .main-content {
+        grid-template-columns: 1fr; /* Всё в одну колонку */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .app-container {
+        width: 100%;
+        height: auto; /* Разрешаем скролл на мобильных */
+        overflow-y: auto;
+    }
+
+    .creator, .visualization, .voice-capture, .storage {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}

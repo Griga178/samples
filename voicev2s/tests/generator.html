@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестер Generator (Web Audio)</title>
+    <link rel="stylesheet" href="generator.css">
+    <style>
+    :root {
+        --bg-color: #f0f2f5;
+        --card-bg: #e6e9ef;
+        --text-main: #2d3436;
+        --accent-blue: #74b9ff;
+        --accent-orange: #ffab76;
+        --accent-green: #2ecc71;
+        --shadow-light: 5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff;
+        --shadow-inner: inset 2px 2px 5px #babecc, inset -5px -5px 10px #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        background-color: var(--bg-color);
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: var(--text-main);
+        margin: 0;
+        display: flex;
+        justify-content: center;
+    }
+
+
+      .container{
+        margin: 0 auto;
+        padding: 136px;
+      }
+
+      .module-card{
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: var(--shadow-light);
+        padding: 20px;
+      }
+
+      .btn {
+          border: none; border-radius: 12px; padding: 12px 20px;
+          font-weight: bold; cursor: pointer; transition: 0.2s;
+          box-shadow: var(--shadow-light);
+      }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎛️ Dynamic Preset Creator</h1>
+        <div class="module-card">
+
+          <div class="controls">
+              <button class="btn" id="toggleBtn">▶️ Старт</button>
+              <span class="status" id="status">⚪ Остановлен</span>
+              <span class="status" id="nameDisplay">Имя: —</span>
+          </div>
+
+          <div>
+              <label>Имя пресета:</label>
+              <input type="text" id="presetName" placeholder="Введите имя" value="Тест">
+              <button id="setNameBtn">Установить имя</button>
+          </div>
+
+          <!-- Карточки гармоник -->
+          <div class="harmonics" id="harmonicsList"></div>
+          <button class="btn" id="addHarmonicBtn">➕ Добавить гармонику</button>
+
+
+        </div>
+    </div>
+
+    <script src="../js/core/EventEmitter.js"></script>
+    <script src="../js/core/Generator.js"></script>
+    <script src="../js/ui/GeneratorUI.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const ui = new GeneratorUI();
+        ui.init();
+        // При необходимости можно сохранить экземпляр глобально
+        window.generatorUI = ui;
+      });
+    </script>
+</body>
+</html>

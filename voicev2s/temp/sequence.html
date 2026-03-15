@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280, height=800, initial-scale=1.0">
+    <title>Empower Synth Studio</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/sequence-studio.css">
+    <link rel="stylesheet" href="sequence.css">
+</head>
+<body>
+  <div class="app-container">
+      <header class="header">
+          <div class="header__logo">Empower Synth Studio</div>
+          <div class="header__user">User Profile</div>
+      </header>
+
+  <main class="main-content main-content--sequence">
+      <section class="sequence-layout">
+          <aside class="module card library">
+              <h2 class="module__title">Preset Library</h2>
+              <p class="module__subtitle">Drag to Timeline</p>
+              <div class="storage-list scrollbar">
+                  <div class="storage-item storage-item--synth" draggable="true">Preset: Hum (A)</div>
+                  <div class="storage-item storage-item--voice" draggable="true">Preset: AAA (Voice)</div>
+                  <div class="storage-item storage-item--synth" draggable="true">Preset: Calm Hum</div>
+                  <div class="storage-item storage-item--special" draggable="true">Special: Pause</div>
+              </div>
+          </aside>
+
+          <section class="module card timeline-container">
+              <h2 class="module__title">Timeline Sequence (Single Track)</h2>
+              <div class="timeline">
+                  <div class="timeline__ruler">
+                      <span>0s</span><span>10s</span><span>20s</span><span>30s</span><span>40s</span><span>50s</span><span>60s</span>
+                  </div>
+                  <div class="timeline__track" id="mainTrack">
+                      <div class="timeline-block t-voice" style="width: 120px;">AAA (Voice)</div>
+                      <div class="timeline-block t-pause" style="width: 40px;">Pause</div>
+                      <div class="timeline-block t-synth" style="width: 150px;">Hum (A)</div>
+                  </div>
+              </div>
+              <div class="timeline__controls">
+                  <button class="btn btn--play">▶ Play Sequence</button>
+                  <button class="btn">Clear All</button>
+              </div>
+          </section>
+      </section>
+
+      <section class="matching-layout">
+          <div class="module card matching">
+              <h2 class="module__title">Pattern Matching</h2>
+              <div class="match-display">
+                  <div class="match-circle">
+                      <span class="match-value">88%</span>
+                      <span class="match-label">Match Score</span>
+                  </div>
+                  <div class="match-status status--active">Status: Matching Now...</div>
+              </div>
+              <div class="algo-selector">
+                  <button class="btn btn--algo active">Algorithm 1</button>
+                  <button class="btn btn--algo">Algorithm 2</button>
+              </div>
+          </div>
+
+          <div class="module card history">
+              <h2 class="module__title">Event History Log</h2>
+              <table class="history-table">
+                  <thead>
+                      <tr>
+                          <th>Time</th>
+                          <th>Matched Pattern</th>
+                          <th>Precision</th>
+                      </tr>
+                  </thead>
+                  <tbody class="scrollbar">
+                      <tr><td>10:05:32</td><td>Calm Hum</td><td>88%</td></tr>
+                      <tr><td>10:05:40</td><td>AAA (Voice)</td><td>91%</td></tr>
+                      <tr class="highlight"><td>10:06:12</td><td>Deep Vowel</td><td>94%</td></tr>
+                  </tbody>
+              </table>
+          </div>
+      </section>
+  </main>
+  </div>
+</body>
+</html>

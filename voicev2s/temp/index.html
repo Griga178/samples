@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280, height=800, initial-scale=1.0">
+    <title>Empower Synth Studio</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/preset-creator.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="header__logo">Empower Synth Studio</div>
+            <div class="header__user">User Profile</div>
+        </header>
+
+        <main class="main-content">
+            <section class="module card creator">
+                <h2 class="module__title">Dynamic Preset Creator</h2>
+                <!-- baseWave block -->
+                <div class="base-wave card--inner">
+                  <div class="harmonic-row harmonic-row--header">
+                      <label class="harmonic-number">Base Wave</label>
+                      <select class="input-select-type">
+                          <option>Sine</option>
+                          <option>Triangle</option>
+                          <option>Saw</option>
+                          <option>Square</option>
+                      </select>
+                  </div>
+
+                  <div class="harmonic-row">
+                      <div class="label-group">
+                          <label>Freq</label>
+                          <span class="value-display">220Hz</span>
+                      </div>
+                      <input type="range" class="input-range-styled" min="20" max="2000" value="220">
+                  </div>
+
+                  <div class="harmonic-row">
+                      <div class="label-group">
+                          <label>Amp</label>
+                          <span class="value-display">100%</span>
+                      </div>
+                      <input type="range" class="input-range-styled" min="0" max="100" value="100">
+                  </div>
+                </div>
+
+                <!-- Harmonic block -->
+                <div class="harmonic-item">
+                    <div class="harmonic-item__content">
+                        <div class="harmonic-row harmonic-row--header">
+                            <span class="harmonic-number">№1</span>
+                            <select class="input-select-type">
+                                <option>Sine</option>
+                                <option>Saw</option>
+                                <option>Square</option>
+                                <option>Triangle</option>
+                            </select>
+                        </div>
+
+                        <div class="harmonic-row">
+                            <div class="label-group">
+                                <label>Freq</label>
+                                <span class="value-display">440Hz</span>
+                            </div>
+                            <input type="range" class="input-range-styled">
+                        </div>
+
+                        <div class="harmonic-row">
+                            <div class="label-group">
+                                <label>Amp</label>
+                                <span class="value-display">80%</span>
+                            </div>
+                            <input type="range" class="input-range-styled">
+                        </div>
+                    </div>
+
+                    <button class="btn-delete-full" title="Удалить гармонику">
+                        <span>×</span>
+                    </button>
+                </div>
+
+                <!-- <div class="harmonic-item">
+                    <div class="harmonic-item__content">
+                        <div class="harmonic-row harmonic-row--header">
+                            <span class="harmonic-number">№1</span>
+                            <select class="input-select-type">
+                                <option>Sine</option>
+                                <option>Saw</option>
+                                <option>Square</option>
+                                <option>Triangle</option>
+                            </select>
+                        </div>
+
+                        <div class="harmonic-row">
+                            <div class="label-group">
+                                <label>Freq</label>
+                                <span class="value-display">440Hz</span>
+                            </div>
+                            <input type="range" class="input-range-styled">
+                        </div>
+
+                        <div class="harmonic-row">
+                            <div class="label-group">
+                                <label>Amp</label>
+                                <span class="value-display">80%</span>
+                            </div>
+                            <input type="range" class="input-range-styled">
+                        </div>
+                    </div>
+
+                    <button class="btn-delete-full" title="Удалить гармонику">
+                        <span>×</span>
+                    </button>
+                </div> -->
+
+                <button class="btn btn--add">+ Add Harmonic</button>
+
+                <div class="creator__footer">
+                    <button class="btn btn--play">Listen</button>
+                    <button class="btn btn--save">Save</button>
+                    <button class="btn btn--load">Load</button>
+              </div>
+            </section>
+
+            <section class="module card visualization">
+                <h2 class="module__title">Visualization & Monitor</h2>
+                <div class="viz-box waveform">
+                    <canvas id="waveformCanvas">Real-time Waveform</canvas>
+                </div>
+                <div class="viz-box spectrum">
+                    <canvas id="spectrumCanvas">FFT Spectrum</canvas>
+                </div>
+                <div class="viz-stats">
+                    <div>Fundamental Freq: <span class="highlight">440Hz</span></div>
+                    <div>RMS Level: <span class="highlight">43.3 dB</span></div>
+                </div>
+            </section>
+
+            <aside class="sidebar">
+                <section class="module card voice-capture">
+                    <h2 class="module__title">Voice Capture</h2>
+                    <div class="mic-status">
+                        <div class="mic-icon">🎤</div>
+                        <div class="input-meter">
+                            <div class="meter-fill" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <button class="btn btn--shoot">📷 SHOOT</button>
+                </section>
+
+                <section class="module card storage">
+                    <h2 class="module__title">Preset Storage</h2>
+                    <div class="storage-list scrollbar">
+                        <div class="storage-item storage-item--voice">AAA Voice</div>
+                        <div class="storage-item storage-item--synth">Calm Hum</div>
+                        <div class="storage-item">Pause</div>
+                    </div>
+                </section>
+            </aside>
+        </main>
+    </div>
+</body>
+</html>
