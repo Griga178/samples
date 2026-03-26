@@ -336,103 +336,7 @@ ul {
     color: var(--color-link);
 }
 
-/* --- 6. Projects Section --- */
-.projects-section {
-    padding: 40px 0 80px;
-}
 
-.section-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 24px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--color-border);
-}
-
-.projects-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-}
-
-.project-card {
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    padding: 20px;
-    transition: all 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    animation: fadeIn 0.4s ease forwards;
-    opacity: 0;
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
-}
-
-.project-card:hover {
-    box-shadow: var(--shadow-hover);
-    border-color: var(--color-text-secondary);
-    transform: translateY(-2px);
-}
-
-.project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.project-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--color-link);
-}
-
-.project-desc {
-    font-size: 0.875rem;
-    color: var(--color-text-secondary);
-    line-height: 1.5;
-}
-
-.project-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 4px;
-}
-
-.tag {
-    display: inline-block;
-    padding: 2px 10px;
-    font-size: 0.75rem;
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-    background-color: var(--color-tag-bg);
-    color: var(--color-tag-text);
-    border-radius: 100px;
-}
-
-.project-links {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-.project-links a {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.project-links svg {
-    fill: var(--color-text);
-}
 
 /* --- 7. Footer --- */
 footer {
@@ -492,13 +396,4 @@ footer a {
         align-items: flex-start;
     }
 
-    .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 1024px) {
-    .projects-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
 }

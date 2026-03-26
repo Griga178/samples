@@ -1,4 +1,5 @@
 
+```plaintext
 ├── index.html         
 ├── assets/
 │   ├── images/
@@ -13,3 +14,4 @@
 │   ├── main.js               # Основная логика
 │   ├── projects.js           # Текст по проектам
 │   └── translations.js       # Текст на странице
+```

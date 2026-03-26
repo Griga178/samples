@@ -104,10 +104,29 @@ function renderProjects() {
         ? projects
         : projects.filter(p => p.category === currentFilter);
 
+    // popup
+    const modal = document.getElementById('modal');
+    const modalContent = modal.querySelector('.modal-content');
+    const closeBtn = modal.querySelector('.modal-close');
+
+    // Функция закрытия модального окна
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    // Закрытие по клику на крестик
+    closeBtn.addEventListener('click', closeModal);
+
+    // Закрытие по клику на оверлей (но не на сам контейнер)
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
     filteredProjects.forEach((project, index) => {
         const card = document.createElement('article');
         card.className = 'project-card';
         card.setAttribute('data-category', project.category);
+        card.setAttribute('data-project-id', project.id);
         card.style.animationDelay = `${index * 0.1}s`;
 
         const title = project.title[currentLang];
@@ -138,10 +157,20 @@ function renderProjects() {
             <div class="project-tags">${tagsHTML}</div>
             <div class="project-links">${linksHTML}</div>
         `;
-
+        
         projectsGrid.appendChild(card);
+        card.addEventListener('click', () => {
+          // Заполняем модальное окно
+          modalContent.innerHTML = project.fullDescription[currentLang] || `<p>Описание недоступно</p>`;
+          modal.style.display = 'flex';
+        });
     });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+    });
+
 }
+
 
 /* =========================================
    INITIALIZATION
