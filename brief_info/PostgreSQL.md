@@ -1,5 +1,3 @@
----
-
 # PostgreSQL
 
 ## Содержание
@@ -67,7 +65,7 @@ DELETE FROM users WHERE age IS NULL;
 
 ### JOIN — объединение таблиц
 ```sql
-SELECT 
+SELECT
     e.name AS employee,
     c.model AS car,
     p.name AS producer
@@ -102,7 +100,7 @@ JOIN producers p ON c.producer_id = p.id;
 
 ```sql
 -- Для каждого работника покажем его место по сумме продаж за месяц
-SELECT 
+SELECT
     e.name,
     s.sale_amount,
     ROW_NUMBER() OVER (PARTITION BY s.date_trunc ORDER BY s.sale_amount DESC) AS rank_in_day
@@ -116,7 +114,7 @@ JOIN sales s ON e.id = s.emp_id;
 
 ```sql
 WITH monthly_stats AS (
-    SELECT 
+    SELECT
         e.id,
         e.name,
         SUM(s.sale_amount) AS total_sales,
@@ -129,7 +127,7 @@ WITH monthly_stats AS (
 best_employee AS (
     SELECT id FROM monthly_stats WHERE rn = 1
 )
-SELECT 
+SELECT
     p.name AS producer_name
 FROM best_employee be
 JOIN emp_cars ec ON be.id = ec.emp_id
@@ -346,7 +344,7 @@ pg_dump -U postgres -t mytable mydb > mytable.sql
 Работают как обычные агрегаты (SUM, AVG, COUNT, MAX, MIN), но применяются к окну.
 
 ```sql
-SELECT 
+SELECT
     name,
     salary,
     SUM(salary) OVER () AS total_salary,                -- сумма по всем
@@ -363,7 +361,7 @@ FROM employees;
 - `CUME_DIST()` — кумулятивное распределение.
 
 ```sql
-SELECT 
+SELECT
     name,
     department,
     salary,
@@ -382,7 +380,7 @@ FROM employees;
 - `NTH_VALUE(column, n)` — n-е значение.
 
 ```sql
-SELECT 
+SELECT
     date,
     amount,
     LAG(amount, 1) OVER (ORDER BY date) AS prev_day_amount,
