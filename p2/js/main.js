@@ -157,7 +157,7 @@ function renderProjects() {
             <div class="project-tags">${tagsHTML}</div>
             <div class="project-links">${linksHTML}</div>
         `;
-        
+
         projectsGrid.appendChild(card);
         card.addEventListener('click', () => {
           // Заполняем модальное окно
@@ -171,6 +171,29 @@ function renderProjects() {
 
 }
 
+function renderTagsFromProjects(projects) {
+  const container = document.getElementById('bioTagContainer');
+  if (!container) return;
+
+  // Собираем все теги из всех проектов
+  const allTags = projects.flatMap(project => project.tags);
+
+  // Оставляем только уникальные (с сохранением порядка первого появления)
+  const uniqueTags = [...new Set([...allTags])];
+  // const uniqueTags = [...new Set([...allTags, "HTML", "CSS", "JS"])];
+
+  // Очищаем контейнер и заполняем спанами
+  container.innerHTML = '';
+  uniqueTags.forEach(tag => {
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.textContent = tag;
+    container.appendChild(span);
+  });
+}
+
+
+
 
 /* =========================================
    INITIALIZATION
@@ -181,4 +204,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
     renderFilterTabs();
     renderProjects();
+    renderTagsFromProjects(projects);
 });

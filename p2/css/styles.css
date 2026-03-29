@@ -139,16 +139,16 @@ ul {
 /* Hero / Profile (Left) */
 .hero {
     padding: 24px 0;
-    /* Убрали min-height: 100vh */
 }
 
 .profile-header {
     text-align: center;
 }
 
+
 .avatar {
-    width: 160px;
-    height: 160px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
     border: 2px solid var(--color-border);
     padding: 4px;
@@ -372,8 +372,8 @@ footer a {
     }
 
     .avatar {
-        width: 180px;
-        height: 180px;
+        width: 280px;
+        height: 280px;
     }
 
     .name {

@@ -12,9 +12,6 @@ const translations = {
         linkedin_btn: "LinkedIn",
         resume_btn: "Download Resume",
         skills_title: "Skills",
-        backend_title: "Backend Development",
-        data_title: "Data Analysis",
-        frontend_title: "Frontend Development",
         projects_title: "Featured Projects",
         source_code: "Source Code",
         live_demo: "Live Demo →",
@@ -28,7 +25,36 @@ const translations = {
         experience_label: "Work Experience",
         experience_value: "11 years 8 months",
         location_label: "Location",
-        location_value: "Saint Petersburg, Russia"
+        location_value: "Saint Petersburg, Russia",
+
+        backend_title: "Data Collection & Automation",
+        backend_list_1: "Web Scraping (Requests, Selenium, Debugger)",
+        backend_list_2: "API Integration (Binance api, Tinkoff api, REST APIs)",
+        backend_list_3: "Task Automation (Selenium, PyAutoGUI) ",
+
+        data_title: "Data Processing & ETL",
+        row_2_1: "Data Processing (Pandas, NumPy)",
+        row_2_2: "ETL Pipelines",
+        row_2_3: "Algorithm Optimization (Multiprocessing)",
+        row_2_4: "Excel Automation (OpenPyXL)",
+
+        frontend_title: "Databases & SQL",
+        row_3_1: "SQL (joins, subqueries, window functions)",
+        row_3_2: "SQLAlchemy",
+        row_3_3: "Work with PostgreSQL / SQLite",
+
+        title_4: "Data Analysis & Visualization",
+        row_4_1: "Data Analysis (exploratory, basic statistics)",
+        row_4_2: "Visualization (Matplotlib, technical indicators)",
+        row_4_3: "Backtesting of Trading Strategies",
+        row_4_4: "Signal Generation Systems",
+
+        title_5: "Work with tools",
+        row_5_1: "Git (branching, merging, PRs)",
+        row_5_2: " Docker (basics: containers, Docker Compose)",
+        row_5_3: "Linux command line, bash scripting",
+        row_5_4: "Familiar with Apache Airflow, ClickHouse ",
+        row_5_5: "Yandex Cloud / S3 (basic object storage)",
     },
     ru: {
         avatar_alt: "Фото",
@@ -43,9 +69,6 @@ const translations = {
         linkedin_btn: "LinkedIn",
         resume_btn: "Скачать резюме",
         skills_title: "Навыки",
-        backend_title: "Backend Разработка",
-        data_title: "Анализ данных",
-        frontend_title: "Frontend Разработка",
         projects_title: "Избранные проекты",
         source_code: "Исходный код",
         live_demo: "Демо →",
@@ -59,6 +82,37 @@ const translations = {
         experience_label: "Опыт работы",
         experience_value: "11 лет 8 месяцев",
         location_label: "Город",
-        location_value: "Санкт-Петербург"
+        location_value: "Санкт-Петербург",
+
+        backend_title: "Сбор данных и автоматизация",
+        backend_list_1: "Парсинг веб-сайтов (Requests, Selenium, Debugger)",
+        backend_list_2: "Интеграция API (Binance api, Tinkoff api, REST APIs)",
+        backend_list_3: "Автоматизация задач (Selenium, PyAutoGUI)",
+
+        data_title: "Обработка данных, ETL",
+        row_2_1: "Обработка данных (Pandas, NumPy)",
+        row_2_2: "построение ETL-конвейеров",
+        row_2_3: "Оптимизация вычислений (Multiprocessing)",
+        row_2_4: "Автоматизация Excel (OpenPyXL)",
+
+
+        frontend_title: "Базы данных, SQL",
+        row_3_1: "SQL сложные запросы (joins, вложенные запросы, оконные функии)",
+        row_3_2: "SQLAlchemy",
+        row_3_3: "Опыт работы с реляционными БД PostgreSQ / SQLite",
+
+        title_4: "Анализ и визуализация",
+        row_4_1: "Первичный анализ данных (базовая статистика)",
+        row_4_2: "Построение графиков (Matplotlib, technical indicators)",
+        row_4_3: "Тестирование торговых стратегий",
+        row_4_4: "Системы генерации сигналов",
+
+        title_5: "Работа с инструментами",
+        row_5_1: "Git (branching, merging, PRs)",
+        row_5_2: "Docker (простой проект подготовки контейнера)",
+        row_5_3: "Базовые команды Linux, bash",
+        row_5_4: "Знаком с оркестрацией и колоночными БД",
+        row_5_5: "Знаком с облачным хранилищем Yandex Cloud / S3",
+
     }
 };
