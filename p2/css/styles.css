@@ -142,7 +142,7 @@ ul {
 }
 
 .profile-header {
-    text-align: center;
+    /* text-align: center; */
 }
 
 
@@ -164,11 +164,18 @@ ul {
     color: var(--color-text);
 }
 
+.bio_container{
+  padding: 16px 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  grid-row-gap: 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
 .bio {
-    font-size: 1rem;
-    color: var(--color-text-secondary);
-    max-width: 400px;
-    margin: 0 auto 24px;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  max-width: 400px;
 }
 
 .social-links {
@@ -176,22 +183,38 @@ ul {
     justify-content: center;
     gap: 12px;
     flex-wrap: wrap;
+    padding: 16px 0 16px 0;
+}
+
+.profile-image{
+  display: grid;
+  justify-items: center;
+}
+
+.profile-tags{
+  border-bottom: 1px solid var(--color-border);
+  padding: 16px 0 16px 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .personal-info {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid var(--color-border);
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* две колонки равной ширины */
+    gap: 16px;
+    justify-items: start;
+    align-items: start;
+    margin-top: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .info-item {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 4px;
 }
 
@@ -288,7 +311,7 @@ ul {
 .skills-list li {
     font-size: 0.875rem;
     color: var(--color-text-secondary);
-    padding: 6px 0;
+    padding: 3px 0;
     padding-left: 16px;
     position: relative;
 }
@@ -380,9 +403,9 @@ footer a {
         font-size: 2rem;
     }
 
-    .bio {
+    /* .bio {
         margin: 0 0 24px 0;
-    }
+    } */
 
     .social-links {
         justify-content: flex-start;

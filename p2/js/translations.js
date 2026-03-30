@@ -24,6 +24,8 @@ const translations = {
         age_value: "31 years",
         experience_label: "Work Experience",
         experience_value: "11 years 8 months",
+        dev_exp_label: "Python Experience",
+        dev_exp_value: `4 years (personal projects, automation).`,
         location_label: "Location",
         location_value: "Saint Petersburg, Russia",
 
@@ -79,8 +81,10 @@ const translations = {
         theme_dark: "Тёмная",
         age_label: "Возраст",
         age_value: "31 год",
-        experience_label: "Опыт работы",
+        experience_label: "Общий стаж",
         experience_value: "11 лет 8 месяцев",
+        dev_exp_label: "Стаж Python",
+        dev_exp_value: `4 года (личные проекты, автоматизация).`,
         location_label: "Город",
         location_value: "Санкт-Петербург",
 
